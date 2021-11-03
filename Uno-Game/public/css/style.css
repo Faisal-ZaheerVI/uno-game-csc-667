@@ -20,7 +20,7 @@ body {
   height: 200px;
 }
 
-.form-signin {
+.form-signin .components {
   width: 100%;
   max-width: 330px;
   padding: 15px;
