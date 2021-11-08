@@ -96,3 +96,25 @@ body {
   color: #071934;
   text-decoration: none;
 }
+
+.game-open {
+  color: white;
+  background-color: green;
+}
+
+.game-inprogress {
+  color: white;
+  background-color: red;
+}
+
+.open-chat {
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 23px;
+  right: 28px;
+  width: 280px;
+}
