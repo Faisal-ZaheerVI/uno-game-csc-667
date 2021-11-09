@@ -1,0 +1,138 @@
+-- ---
+-- Globals
+-- ---
+
+-- SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+-- SET FOREIGN_KEY_CHECKS=0;
+
+-- ---
+-- Table 'users'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `users`;
+		
+CREATE TABLE `users` (
+  `user_id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
+  `username` VARCHAR NULL DEFAULT NULL,
+  `email` VARCHAR NULL DEFAULT NULL,
+  `password` VARCHAR NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`user_id`)
+);
+
+-- ---
+-- Table 'game_players'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `game_players`;
+		
+CREATE TABLE `game_players` (
+  `user_id` INTEGER NULL DEFAULT NULL,
+  `game_id` INTEGER NULL DEFAULT NULL,
+  `card_count` INTEGER NULL DEFAULT NULL,
+  `order` INTEGER NULL DEFAULT NULL,
+  `win_status` INTEGER NULL DEFAULT NULL,
+  PRIMARY KEY ()
+);
+
+-- ---
+-- Table 'games'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `games`;
+		
+CREATE TABLE `games` (
+  `game_id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
+  `direction` INTEGER NULL DEFAULT NULL,
+  `game_title` VARCHAR NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`game_id`)
+);
+
+-- ---
+-- Table 'chat'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `chat`;
+		
+CREATE TABLE `chat` (
+  `message_id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
+  `user_id` INTEGER NULL DEFAULT NULL,
+  `game_id` INTEGER NULL DEFAULT NULL,
+  `message` MEDIUMTEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`message_id`)
+);
+
+-- ---
+-- Table 'game_cards'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `game_cards`;
+		
+CREATE TABLE `game_cards` (
+  `card_id` INTEGER NULL DEFAULT NULL,
+  `user_id` INTEGER NULL DEFAULT NULL,
+  `game_id` INTEGER NULL DEFAULT NULL,
+  `discard` INTEGER NULL DEFAULT NULL,
+  PRIMARY KEY ()
+);
+
+-- ---
+-- Table 'cards'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `cards`;
+		
+CREATE TABLE `cards` (
+  `card_id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
+  `color` VARCHAR NULL DEFAULT NULL,
+  `value` INTEGER NULL DEFAULT NULL,
+  `image_path` VARCHAR NULL DEFAULT NULL,
+  PRIMARY KEY (`card_id`)
+);
+
+-- ---
+-- Foreign Keys 
+-- ---
+
+ALTER TABLE `game_players` ADD FOREIGN KEY (user_id) REFERENCES `users` (`user_id`);
+ALTER TABLE `game_players` ADD FOREIGN KEY (game_id) REFERENCES `games` (`game_id`);
+ALTER TABLE `chat` ADD FOREIGN KEY (user_id) REFERENCES `users` (`user_id`);
+ALTER TABLE `chat` ADD FOREIGN KEY (game_id) REFERENCES `games` (`game_id`);
+ALTER TABLE `game_cards` ADD FOREIGN KEY (card_id) REFERENCES `cards` (`card_id`);
+ALTER TABLE `game_cards` ADD FOREIGN KEY (user_id) REFERENCES `users` (`user_id`);
+ALTER TABLE `game_cards` ADD FOREIGN KEY (game_id) REFERENCES `games` (`game_id`);
+
+-- ---
+-- Table Properties
+-- ---
+
+-- ALTER TABLE `users` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+-- ALTER TABLE `game_players` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+-- ALTER TABLE `games` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+-- ALTER TABLE `chat` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+-- ALTER TABLE `game_cards` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+-- ALTER TABLE `cards` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- ---
+-- Test Data
+-- ---
+
+-- INSERT INTO `users` (`user_id`,`username`,`email`,`password`,`created`,`active`) VALUES
+-- ('','','','','','');
+-- INSERT INTO `game_players` (`user_id`,`game_id`,`card_count`,`order`,`win_status`) VALUES
+-- ('','','','','');
+-- INSERT INTO `games` (`game_id`,`player_count`,`game_title`,`created`) VALUES
+-- ('','','','');
+-- INSERT INTO `chat` (`message_id`,`user_id`,`game_id`,`message`) VALUES
+-- ('','','','');
+-- INSERT INTO `game_cards` (`card_id`,`user_id`,`game_id`,`discard`) VALUES
+-- ('','','','');
+-- INSERT INTO `cards` (`card_id`,`color`,`value`,`image_path`) VALUES
+-- ('','','','');
