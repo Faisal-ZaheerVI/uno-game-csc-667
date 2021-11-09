@@ -2,15 +2,18 @@
 
 <body class="text-center">
 
-  <form action="/" class="form-signin" method="POST">
+  <form action="/login" class="form-signin" method="POST">
     <img class="mb-4" src="images/uno.png" alt="" width="300" height="300">
 
 
     <div class="mid">
+
       <input type="email" name="email" class="form-control bottom" placeholder="email address" required>
       <input type="password" name="password" class="form-control bottom" placeholder="password" required>
 
-      <button class="btn btn-lg btn-primary btn-block" type="submit">SIGN IN</button>
+      <button type="submit" class="btn btn-lg btn-primary btn-block">SIGN IN</button>
+    </form>
+
       <div class="links">
         <div class="link1">
           <a href="#" class="forgot">Forgot password?</a>
@@ -20,7 +23,6 @@
         </div>
       </div>
   </div>
-  </form>
 </body>
 
 <%- include("footer") -%>

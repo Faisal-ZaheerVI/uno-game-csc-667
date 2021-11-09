@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('home');
 });
@@ -10,8 +9,16 @@ router.get('/login', function(req, res, next) {
   res.render('login');
 });
 
+router.post('/login', function(req, res, next) {
+  res.redirect('/lobby');
+});
+
 router.get('/registration', function(req, res, next) {
   res.render('registration');
+});
+
+router.post('/registration', function(req, res, next) {
+  res.redirect('lobby');
 });
 
 router.get('/rules', function(req, res, next) {
