@@ -1,15 +1,20 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var ejs = require("ejs");
-var bodyParser = require("body-parser");
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const ejs = require("ejs");
+const bodyParser = require("body-parser");
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+if(process.env.NODE_ENV === "development") {
+  require("dotenv").config();
+}
 
-var app = express();
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const testsRouter = require('./routes/tests');
+
+const app = express();
 
 // view engine setup
 app.set('view engine', 'ejs');
@@ -22,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/tests', testsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
