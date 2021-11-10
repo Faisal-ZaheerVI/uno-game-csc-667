@@ -7,8 +7,7 @@ Jibraeel Abdelwahhab
 # Build/Run Instructions
 
 ## Build Instructions
-1. cd uno-game
-2. npm install
+1. npm install
 
 ## Run Instructions
-1. npm start
+1. npm start (or npm run start:dev)
