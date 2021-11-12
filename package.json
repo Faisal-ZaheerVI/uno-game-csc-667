@@ -10,8 +10,7 @@
     "start:dev": "SET \"NODE_ENV=development\" SET DEBUG=uno-game:* & nodemon ./bin/www",
     "db:create:migration": "npx sequelize migration:generate --name ",
     "db:migrate": "npx sequelize db:migrate",
-    "db:rollback": "npx sequelize db:migrate:undo",
-    "postinstall": "npx sequelize db:migrate"
+    "db:rollback": "npx sequelize db:migrate:undo"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
