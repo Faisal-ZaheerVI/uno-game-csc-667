@@ -115,3 +115,29 @@ body {
   right: 28px;
   width: 280px;
 }
+
+/* logout */
+
+.logout a {
+  font-family: Avenir-Heavy;
+  color: #071934;
+  text-decoration: none;
+  position: absolute;
+  top: 10px; right: 40px;
+}
+
+/* lobby */
+
+/* game */
+.form-game {
+  font-family: Avenir-Medium;
+  padding: 15px;
+}
+
+.game-image {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+
+}
