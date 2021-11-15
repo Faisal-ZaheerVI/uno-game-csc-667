@@ -1,6 +1,24 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('cards', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      color: {
+        type: Sequelize.ENUM('red', 'blue', 'green', 'yellow', 'black'),
+        allowNull: false
+      },
+      value: {
+        allowNull: false,
+        // 0-9 , 10=Skip, 11=Reverse, 12="+2", 13=Wild (Choose color), 14="+4" (Choose color)
+        type: Sequelize.INTEGER
+      }
+    });
+
     await queryInterface.createTable('users', {
       id: {
         allowNull: false,
@@ -84,6 +102,5 @@ module.exports = {
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropAllTables();
-    // await queryInterface.dropTable('users');
   }
 };

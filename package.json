@@ -10,7 +10,9 @@
     "start:dev": "SET \"NODE_ENV=development\" SET DEBUG=uno-game:* & nodemon ./bin/www",
     "db:create:migration": "npx sequelize migration:generate --name ",
     "db:migrate": "npx sequelize db:migrate",
-    "db:rollback": "npx sequelize db:migrate:undo"
+    "db:rollback": "npx sequelize db:migrate:undo",
+    "db:create:seed": "npx sequelize seed:generate --name ",
+    "db:seed": "npx sequelize db:seed:all"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

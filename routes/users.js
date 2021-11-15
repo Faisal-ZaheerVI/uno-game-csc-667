@@ -40,9 +40,11 @@ router.post('/register', (req, res, next) => {
   }
 
   if (errors.length > 0) {
+    // Form Validation has failed:
     res.render('registration', { errors });
   } else {
-
+    // Form Validation has passed:
+    
   }
 
 });
