@@ -74,9 +74,20 @@ module.exports = {
         value: 0
       }
     ]);
+
+    await queryInterface.bulkInsert('users', [
+      {
+        id: 1,
+        username: "admin",
+        email: "admin@admin",
+        password: "$2b$15$0Hxu0IZWPnya0DlJ0xpUOejqcUFFgpdf7gQdQyxxsEiVWJOSSYSSq",
+        created: "2021-11-15"
+      }
+    ]);
   },
 
   down: async (queryInterface, Sequelize) => {
     await queryInterface.bulkDelete('cards', null, {});
+    await queryInterface.bulkDelete('users', null, {});
   }
 };

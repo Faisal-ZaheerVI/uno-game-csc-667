@@ -1,5 +1,8 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const db = require('../db');
+const bcrypt = require('bcrypt');
+const e = require('express');
 
 // const UserModel = require('../models/Users');
 
@@ -9,7 +12,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* REGISTER */
-router.post('/register', (req, res, next) => {
+router.post('/register', async (req, res, next) => {
   let username = req.body.username;
   let email = req.body.email;
   let password = req.body.password;
@@ -44,7 +47,15 @@ router.post('/register', (req, res, next) => {
     res.render('registration', { errors });
   } else {
     // Form Validation has passed:
-
+    let hashedPassword = await bcrypt.hash(password, 15);
+    // db.any(
+    //   `SELECT * FROM users WHERE username = $1`, [username], (err, results) => {
+    //     if(err) {
+    //       throw err
+    //     }
+    //     console.log(results.rows);
+    //   }
+    // );
   }
 
 });
