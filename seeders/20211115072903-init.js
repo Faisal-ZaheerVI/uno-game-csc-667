@@ -2,6 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    // Inserted based on cards image.
     await queryInterface.bulkInsert('cards', [
       {
         id: 1,

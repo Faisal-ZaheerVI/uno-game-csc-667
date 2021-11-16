@@ -59,14 +59,63 @@ module.exports = {
         references: { model: 'users', key: 'id' }
       },
       title: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       direction: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.INTEGER // -1 or 1
       },
-      created: {
+      created: { // Do we need?
         allowNull: false,
         type: Sequelize.DATE
+      }
+    });
+
+    await queryInterface.createTable('game_players', {
+      user_id: {
+        type: Sequelize.INTEGER,
+        references: { model: 'users', key: 'id' }
+      },
+      game_id: {
+        type: Sequelize.INTEGER,
+        references: { model: 'games', key: 'id' }
+      },
+      current_player: { // Change to boolean?
+        allowNull: false,
+        type: Sequelize.INTEGER // 0 for false, 1 for true
+      },
+      order: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      }
+    });
+
+    await queryInterface.createTable('game_cards', {
+      user_id: {
+        allowNull: true, // If in Discard, no User has the card, hence NULL? (or do 0)
+        type: Sequelize.INTEGER,
+        references: { model: 'users', key: 'id' }
+      },
+      game_id: {
+        type: Sequelize.INTEGER,
+        references: { model: 'games', key: 'id' }
+      },
+      card_id: {
+        type: Sequelize.INTEGER,
+        references: { model: 'cards', key: 'id' }
+      },
+      order: { // Order in hand?
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
+      discarded: { // Change to boolean?
+        allowNull: false,
+        type: Sequelize.INTEGER // 1 for true, 0 for false.
+      },
+      draw_pile: { // Change to boolean?
+        allowNull: false,
+        type: Sequelize.INTEGER // 1 for true, 0 for false.
       }
     });
 
