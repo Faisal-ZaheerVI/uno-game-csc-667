@@ -101,7 +101,7 @@ body {
 
 .game-inprogress {
   color: white;
-  background-color: red;
+  background-color: grey;
 }
 
 .open-chat {

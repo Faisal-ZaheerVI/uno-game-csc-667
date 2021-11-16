@@ -9,7 +9,10 @@
         <div class="form-signin">
         <img class="mb-4" src="images/uno.png" alt="" width="300" height="300">
 
-       
+        <!--Create Game (does not work yet)-->
+        <div class="create_game_button">
+            <button type="button">Create New Game</button>
+        </div>
         <div class="mid">
             <h1>Current Games</h1>
             <p>Green: Open</p>
@@ -27,14 +30,14 @@
             <div class="game-open">
             <tr>
                 <td>001</td>
-                <td>0</td>
+                <td>0/4</td>
                 <td>Open</td>
                 <td><button type="join-game">Join</button></td>
             </tr>
             </div>
             <tr class="game-inprogress">
                 <td>002</td>
-                <td>4</td>
+                <td>4/4</td>
                 <td>In Progress</td>
                 <td></td>
             </tr>
@@ -46,6 +49,22 @@
             </tr>
         </table>
 
+        <!--Delete Game (does not work yet)-->
+        <!--Must only delete games started by the user who created it-->
+        <div class="delete_game_button">
+            <button type="button">Delete a Game</button>
+        </div>
+        <div class="users_waiting">
+            <table>
+                <tr>
+                    <td>Users Waiting for a Game</td>
+                </tr>
+                <tr>
+                    <!--Eventually must iterate through the user database-->
+                    <td>None</td>
+                </tr>
+            </table>
+        </div>
     </div>
 
     </body>
