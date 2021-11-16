@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
 const logger = require('morgan');
 const ejs = require("ejs");
+const bcrypt = require('bcrypt');
 
 const sessions = require('express-session');
 // const mysqlSession = require('express-mysql-session')(sessions);

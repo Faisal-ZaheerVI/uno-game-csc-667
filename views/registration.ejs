@@ -2,6 +2,7 @@
 
 <body class="text-center">
 
+  <div class="form-signin">
   <img class="mb-4" src="/images/uno.png" alt="" width="300" height="300">
 
   <ul>
@@ -10,7 +11,7 @@
     <% }) %> <% } %>
   </ul>
 
-  <form class="form-signin" action="/users/register" method="POST" enctype="application/x-www-form-urlencoded">
+  <form action="/users/register" method="POST" enctype="application/x-www-form-urlencoded">
     <div class="mid">
       <input type="text" name="username" class="form-control bottom" placeholder="Enter a username" required>
       <input type="email" name="email" class="form-control bottom" placeholder="Enter your email" required>
@@ -20,6 +21,7 @@
       <!-- <input type="submit" value="register" -->
     </div>
   </form>
+</div>
 </body>
 
 <%- include("footer") -%>
