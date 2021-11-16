@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-const bcrypt = require('bcrypt');
-const e = require('express');
 
 // const UserModel = require('../models/Users');
+// const UserError = require('../helpers/error/UserError');
+// const { successPrint, errorPrint } = require('../helpers/debug/debugprinters');
+// const {registerValidator, loginValidator} = require('../middleware/validation');
+
+const bcrypt = require('bcrypt');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -19,10 +22,10 @@ router.post('/register', async (req, res, next) => {
   let cpassword = req.body.cpassword;
 
   // Simple Form Validation:
-  // Username: At least 3 characters
-  // Email: 
-  // Password: At least 6 characters
-  // Password + Confirm Password needs to match
+  // All values need to be filled out.
+  // Username: At least 3 characters.
+  // Password: At least 6 characters.
+  // Password + Confirm Password needs to match.
 
   let errors = [];
 
@@ -42,20 +45,37 @@ router.post('/register', async (req, res, next) => {
     errors.push({message: "Passwords do not match."});
   }
 
+  // Form Validation has failed:
   if (errors.length > 0) {
-    // Form Validation has failed:
     res.render('registration', { errors });
-  } else {
-    // Form Validation has passed:
+  } 
+  // Form Validation has passed:
+  else {
+    // Bcrypt encrypts passwords for 15 cycles (takes a few seconds).
     let hashedPassword = await bcrypt.hash(password, 15);
-    // db.any(
-    //   `SELECT * FROM users WHERE username = $1`, [username], (err, results) => {
-    //     if(err) {
-    //       throw err
-    //     }
-    //     console.log(results.rows);
-    //   }
-    // );
+
+    // Checks for existing usernames in database
+    await db.any('SELECT * FROM users WHERE username = $1', username)
+    .then( result => {
+      if(result.length > 0) {
+        errors.push({message: "Username already exists."});
+        res.render('registration', { errors })
+      } else {
+        db.query(`INSERT INTO users ("username", "email", "password", "created") VALUES ($1, $2, $3, $4)`, [username, email, hashedPassword, "now()"])
+        .then((_) => {
+          req.flash('success', 'User account has been made!');
+          res.redirect('/login');
+        })
+        .catch( error => {
+          console.log( error );
+          res.json({ error });
+        }); 
+      }
+    })
+    .catch( error => {
+        console.log( error );
+        res.json({ error });
+    });
   }
 
 });

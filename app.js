@@ -2,9 +2,13 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const bodyParser = require("body-parser");
 const logger = require('morgan');
 const ejs = require("ejs");
-const bodyParser = require("body-parser");
+
+const sessions = require('express-session');
+// const mysqlSession = require('express-mysql-session')(sessions);
+const flash = require('express-flash');
 
 if(process.env.NODE_ENV === "development") {
   require("dotenv").config();
@@ -16,6 +20,20 @@ const testsRouter = require('./routes/tests');
 
 const app = express();
 
+// const mysqlSessionStore = new mysqlSession(
+//   {
+//     /* using default options */
+//   },
+//   require('./db')
+// );
+
+app.use(sessions({
+  secret: "this is a secret from csc667",
+  resave: false,
+  saveUninitialized: false
+}));
+
+app.use(flash());
 // view engine setup
 app.set('view engine', 'ejs');
 
@@ -24,6 +42,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// app.use((req, res, next) => {
+//   console.log(req.session);
+//   if(req.session.username) {
+//     // If sessions is initialized, aka if logged in
+//     res.locals.logged = true;
+//   }
+//   next();
+// });
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
