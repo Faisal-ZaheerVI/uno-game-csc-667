@@ -116,7 +116,15 @@ body {
   width: 280px;
 }
 
-/* lobby */
+/* navbar */
+
+.home a {
+  font-family: Avenir-Heavy;
+  color: #071934;
+  text-decoration: none;
+  position: absolute;
+  top: 10px; right: 245px;
+}
 
 .lobby a {
   font-family: Avenir-Heavy;
@@ -126,8 +134,6 @@ body {
   top: 10px; right: 180px;
 }
 
-/* rules */
-
 .rules a {
   font-family: Avenir-Heavy;
   color: #071934;
@@ -136,8 +142,6 @@ body {
   top: 10px; right: 120px;
 }
 
-/* logout */
-
 .logout a {
   font-family: Avenir-Heavy;
   color: #071934;
@@ -145,8 +149,6 @@ body {
   position: absolute;
   top: 10px; right: 40px;
 }
-
-/* lobby */
 
 /* game */
 .form-game {
