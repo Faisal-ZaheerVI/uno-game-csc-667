@@ -1,38 +1,54 @@
 <%- include("header") -%>
 
-<div class="home">
-    <a href="/" class="create">Home</a>
-</div>
-
-<div class="lobby">
-    <a href="/lobby" class="create">Lobby</a>
-</div>
-
-<div class="rules">
-    <a href="/rules" class="create">Rules</a>
-</div>
-
-<div class="logout">
-    <a href="/" class="create">Log Out</a>
-</div>
-
-<div class="form-game">
-    <div class="game-image">
-    <img class="mb-4" src="images/uno.png" alt="" width="300" height="300"></div>
-    <!--TO IMPLEMENT GAME LINK TO BACKEND-->
-    <button class="open-chat" onclick>Chat</button>
-    <!--TO IMPLEMENT FULL CHAT WINDOW OPTION-->
-    <div class="chat" id="form">
-        <form class="form">
-            <h1>Chat</h1>
-            <label for="msg"><b>Message</b></label>
-            <textarea placeholder="Type message" name="msg required"></textarea>
-
-            <button type="submit" class="btn">Send</button>
-            <button type="button" class="cancel">Close</button>
-        </form>
+    <div class="home">
+        <a href="/" class="create">Home</a>
     </div>
-</div>
+
+    <div class="lobby">
+        <a href="/lobby" class="create">Lobby</a>
+    </div>
+
+    <div class="rules">
+        <a href="/rules" class="create">Rules</a>
+    </div>
+
+    <div class="logout">
+        <a href="/" class="create">Log Out</a>
+    </div>
 
 
-<%- include("footer") -%>
+    <div class="form-game">
+        <div class="game-image">
+            <img class="mb-4" src="images/uno.png" alt="" width="300" height="300">
+        </div>
+
+        <!-- Player 1 -->
+        <h1>Player 1</h1>
+        <!-- Player 1 Cards -->
+        <!-- Draw card button -->
+        <button type="button" class="btn btn-primary">Draw Card</button>
+        <!-- Middle Card -->
+        <!-- Uno button -->
+        <button type="button" class="btn btn-danger">Uno</button>
+        <!-- Player 2 Cards -->
+        <!-- Player 2 -->
+        <h1>Player 2</h1>
+
+
+        <!--TO IMPLEMENT GAME LINK TO BACKEND-->
+        <button class="open-chat" onclick>Chat</button>
+        <!--TO IMPLEMENT FULL CHAT WINDOW OPTION-->
+        <div class="chat" id="form">
+            <form class="form">
+                <h1>Chat</h1>
+                <label for="msg"><b>Message</b></label>
+                <textarea placeholder="Type message" name="msg required"></textarea>
+
+                <button type="submit" class="btn">Send</button>
+                <button type="button" class="cancel">Close</button>
+            </form>
+        </div>
+    </div>
+
+
+    <%- include("footer") -%>

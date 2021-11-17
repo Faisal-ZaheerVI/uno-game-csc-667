@@ -63,7 +63,7 @@ body {
   border-top-right-radius: 0;
 }
 
-.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+.btn-signin, .btn-signin:hover, .btn-signin:active, .btn-signin:visited {
   background-color: #7868f8;
   border-color: #7868f8;
   font-family: Avenir-Heavy;
