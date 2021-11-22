@@ -1,34 +1,88 @@
 <%- include("header") -%>
 
-<div class="lobby">
-    <a href="/lobby" class="create">Lobby</a>
-</div>
-
-<div class="rules">
-    <a href="/rules" class="create">Rules</a>
-</div>
-
-<div class="logout">
-    <a href="/" class="create">Log Out</a>
-</div>
-
-<div class="form-game">
-    <div class="game-image">
-    <img class="mb-4" src="images/uno.png" alt="" width="300" height="300"></div>
-    <!--TO IMPLEMENT GAME LINK TO BACKEND-->
-    <button class="open-chat" onclick>Chat</button>
-    <!--TO IMPLEMENT FULL CHAT WINDOW OPTION-->
-    <div class="chat" id="form">
-        <form class="form">
-            <h1>Chat</h1>
-            <label for="msg"><b>Message</b></label>
-            <textarea placeholder="Type message" name="msg required"></textarea>
-
-            <button type="submit" class="btn">Send</button>
-            <button type="button" class="cancel">Close</button>
-        </form>
+    <div class="home">
+        <a href="/" class="create">Home</a>
     </div>
-</div>
+
+    <div class="lobby">
+        <a href="/lobby" class="create">Lobby</a>
+    </div>
+
+    <div class="rules">
+        <a href="/rules" class="create">Rules</a>
+    </div>
+
+    <div class="logout">
+        <a href="/" class="create">Log Out</a>
+    </div>
 
 
-<%- include("footer") -%>
+    <div class="form-game">
+        <div class="game-image">
+            <img class="mb-4" src="images/uno.png" alt="" width="300" height="300">
+        </div>
+
+        <!-- Player 1 -->
+        <h1>Player 1</h1>
+
+        <!-- Player 1 Deck -->
+        <!-- 7 random cards -->
+        <div class="player1Deck">
+        <img src="assets/Green_0.png" alt="middle card">
+        <img src="assets/Green_1.png" alt="middle card">
+        <img src="assets/Green_2.png" alt="middle card">
+        <img src="assets/Green_3.png" alt="middle card">
+        <img src="assets/Green_4.png" alt="middle card">
+        <img src="assets/Green_5.png" alt="middle card">
+        <img src="assets/Green_6.png" alt="middle card">
+        </div>
+
+        <div class="game-middle">
+
+        <!-- Draw card button -->
+        <button type="button" class="btn btn-primary">Draw Card</button>
+
+        <!-- Middle Card -->
+        <!-- 1 random card -->
+        <div class="middle-card">
+        <img src="assets/Wild.png" alt="middle card">
+        </div>
+
+        <!-- Uno button -->
+        <button type="button" class="btn btn-danger">Uno</button>
+
+        </div>
+
+        <!-- Player 2 Deck -->
+        <!-- 7 random cards -->
+        <div class="player2Deck">
+        <img src="assets/Deck.png" alt="middle card">
+        <img src="assets/Deck.png" alt="middle card">
+        <img src="assets/Deck.png" alt="middle card">
+        <img src="assets/Deck.png" alt="middle card">
+        <img src="assets/Deck.png" alt="middle card">
+        <img src="assets/Deck.png" alt="middle card">
+        <img src="assets/Deck.png" alt="middle card">
+        </div>
+
+        <!-- Player 2 -->
+        <h1>Player 2</h1>
+
+
+        <!--TO IMPLEMENT GAME LINK TO BACKEND-->
+        <button class="open-chat" onclick>Chat</button>
+        <!--TO IMPLEMENT FULL CHAT WINDOW OPTION-->
+        <div class="chat" id="form">
+            <form class="form">
+                <h1>Chat</h1>
+                <label for="msg"><b>Message</b></label>
+                <textarea placeholder="Type message" name="msg required"></textarea>
+
+                <button type="submit" class="btn">Send</button>
+                <button type="button" class="cancel">Close</button>
+            </form>
+        </div>
+    </div>
+
+
+    <%- include("footer") -%>

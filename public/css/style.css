@@ -63,7 +63,7 @@ body {
   border-top-right-radius: 0;
 }
 
-.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+.btn-signin, .btn-signin:hover, .btn-signin:active, .btn-signin:visited {
   background-color: #7868f8;
   border-color: #7868f8;
   font-family: Avenir-Heavy;
@@ -104,6 +104,7 @@ body {
   background-color: grey;
 }
 
+
 .open-chat {
   color: white;
   padding: 16px 20px;
@@ -116,7 +117,15 @@ body {
   width: 280px;
 }
 
-/* lobby */
+/* navbar */
+
+.home a {
+  font-family: Avenir-Heavy;
+  color: #071934;
+  text-decoration: none;
+  position: absolute;
+  top: 10px; right: 245px;
+}
 
 .lobby a {
   font-family: Avenir-Heavy;
@@ -126,8 +135,6 @@ body {
   top: 10px; right: 180px;
 }
 
-/* rules */
-
 .rules a {
   font-family: Avenir-Heavy;
   color: #071934;
@@ -136,8 +143,6 @@ body {
   top: 10px; right: 120px;
 }
 
-/* logout */
-
 .logout a {
   font-family: Avenir-Heavy;
   color: #071934;
@@ -145,8 +150,6 @@ body {
   position: absolute;
   top: 10px; right: 40px;
 }
-
-/* lobby */
 
 /* game */
 .form-game {
@@ -159,4 +162,41 @@ body {
   margin-left: auto;
   margin-right: auto;
   width: 50%;
+}
+
+.player1Deck img{
+  width: 50px;
+  height: auto;
+  position: relative;
+  top: 0;
+  transition: top ease 0.5s;
+}
+
+.player1Deck img:hover {
+  top: -10px;
+}
+
+.game-middle {
+  display:flex;
+  align-items:center;
+  justify-content: center;
+  justify-content: space-between;
+  margin: 50px 0;
+}
+
+.middle-card img{
+  width: 50px;
+  height: auto;
+}
+
+.player2Deck img{
+  width: 50px;
+  height: auto;
+  position: relative;
+  top: 0;
+  transition: top ease 0.5s;
+}
+
+.player2Deck img:hover {
+  top: -10px;
 }
