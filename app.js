@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const logger = require('morgan');
 const ejs = require("ejs");
 
+const passport = require('passport');
 const sessions = require('express-session');
 // const mysqlSession = require('express-mysql-session')(sessions);
 const flash = require('express-flash');
@@ -34,6 +35,10 @@ app.use(sessions({
 }));
 
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 // view engine setup
 app.set('view engine', 'ejs');
 
