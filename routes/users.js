@@ -55,89 +55,89 @@ router.post('/register', async (req, res, next) => {
   } 
   // Form Validation has passed:
   else {
-    UserModel.usernameExists(username)
-    .then((userNameDoesExist) => {
-      if(userNameDoesExist) {
-        errors.push({message: "Username already exists."});
-        res.render('registration', { errors });
-        throw new UserError(
-          "Registration Failed: Username already exists",
-          "/registration",
-          200
-        );
-      } else {
-        return UserModel.emailExists(email);
-      }
-    })
-    .then((emailDoesExist) => {
-      if(emailDoesExist) {
-        errors.push({message: "Email already registered with an account."});
-        res.render('registration', { errors });
-        throw new UserError(
-          "Registration Failed: Email already exists",
-          "/registration",
-          200
-        );
-      } else {
-        return UserModel.create(username, password, email);
-      }
-    })
-    .then((createdUserId) => {
-      if(createdUserId < 0) {
-        errors.push({message: "Server Error, user could not be created."});
-        res.render('registration', { errors });
-        throw new UserError(
-          "Server Error, user could not be created",
-          "/registration",
-          500
-        );
-      } else {
-        req.flash('success', 'User account has been made!');
-        req.session.save( err => {
-          res.redirect('/login');
-        });
-      }
-    })
-    .catch( (error) => {
-      console.log( error );
-      res.json({ error });
-      if(error instanceof UserError) {
-        // User error
-        // errorPrint(error.getMessage());
-        req.flash('error', error.getMessage());
-        // res.status(error.getStatus());
-        // res.redirect(error.getRedirectURL());
-      } else {
-        // General Errors
-        next(error);
-      }
-    });
-
-    // // Bcrypt encrypts passwords for 15 cycles (takes a few seconds).
-    // let hashedPassword = await bcrypt.hash(password, 15);
-
-    // // Checks for existing usernames in database
-    // await db.any('SELECT * FROM users WHERE username = $1', username)
-    // .then( result => {
-    //   if(result.length > 0) {
+    // UserModel.usernameExists(username)
+    // .then((userNameDoesExist) => {
+    //   if(userNameDoesExist) {
     //     errors.push({message: "Username already exists."});
-    //     res.render('registration', { errors })
+    //     res.render('registration', { errors });
+    //     throw new UserError(
+    //       "Registration Failed: Username already exists",
+    //       "/registration",
+    //       200
+    //     );
     //   } else {
-    //     db.query(`INSERT INTO users ("username", "email", "password", "created") VALUES ($1, $2, $3, $4)`, [username, email, hashedPassword, "now()"])
-    //     .then((_) => {
-    //       req.flash('success', 'User account has been made!');
-    //       res.redirect('/login');
-    //     })
-    //     .catch( error => {
-    //       console.log( error );
-    //       res.json({ error });
-    //     }); 
+    //     return UserModel.emailExists(email);
     //   }
     // })
-    // .catch( error => {
-    //     console.log( error );
-    //     res.json({ error });
+    // .then((emailDoesExist) => {
+    //   if(emailDoesExist) {
+    //     errors.push({message: "Email already registered with an account."});
+    //     res.render('registration', { errors });
+    //     throw new UserError(
+    //       "Registration Failed: Email already exists",
+    //       "/registration",
+    //       200
+    //     );
+    //   } else {
+    //     return UserModel.create(username, password, email);
+    //   }
+    // })
+    // .then((createdUserId) => {
+    //   if(createdUserId < 0) {
+    //     errors.push({message: "Server Error, user could not be created."});
+    //     res.render('registration', { errors });
+    //     throw new UserError(
+    //       "Server Error, user could not be created",
+    //       "/registration",
+    //       500
+    //     );
+    //   } else {
+    //     req.flash('success', 'User account has been made!');
+    //     req.session.save( err => {
+    //       res.redirect('/login');
+    //     });
+    //   }
+    // })
+    // .catch( (error) => {
+    //   console.log( error );
+    //   res.json({ error });
+    //   if(error instanceof UserError) {
+    //     // User error
+    //     // errorPrint(error.getMessage());
+    //     req.flash('error', error.getMessage());
+    //     // res.status(error.getStatus());
+    //     // res.redirect(error.getRedirectURL());
+    //   } else {
+    //     // General Errors
+    //     next(error);
+    //   }
     // });
+
+    // Bcrypt encrypts passwords for 15 cycles (takes a few seconds).
+    let hashedPassword = await bcrypt.hash(password, 15);
+
+    // Checks for existing usernames in database
+    await db.any('SELECT * FROM users WHERE username = $1', username)
+    .then( result => {
+      if(result.length > 0) {
+        errors.push({message: "Username already exists."});
+        res.render('registration', { errors })
+      } else {
+        db.query(`INSERT INTO users ("username", "email", "password", "created") VALUES ($1, $2, $3, $4)`, [username, email, hashedPassword, "now()"])
+        .then((_) => {
+          req.flash('success', 'User account has been made!');
+          res.redirect('/login');
+        })
+        .catch( error => {
+          console.log( error );
+          res.json({ error });
+        }); 
+      }
+    })
+    .catch( error => {
+        console.log( error );
+        res.json({ error });
+    });
   }
 
 });

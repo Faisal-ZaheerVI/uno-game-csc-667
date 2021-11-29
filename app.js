@@ -11,6 +11,9 @@ const sessions = require('express-session');
 // const mysqlSession = require('express-mysql-session')(sessions);
 const flash = require('express-flash');
 
+// const initializePassport = require('../config/passport');
+// initializePassport(passport);
+
 if(process.env.NODE_ENV === "development") {
   require("dotenv").config();
 }
@@ -28,16 +31,17 @@ const app = express();
 //   require('./db')
 // );
 
+// Express Session
 app.use(sessions({
   secret: "this is a secret from csc667",
   resave: false,
   saveUninitialized: false
 }));
 
-app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(flash());
 
 // view engine setup
 app.set('view engine', 'ejs');
