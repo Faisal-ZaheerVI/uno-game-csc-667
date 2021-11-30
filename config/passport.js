@@ -48,13 +48,13 @@ module.exports = function(passport) {
       db.any('SELECT * FROM users WHERE username = $1', username)
       .then( result => {
         // If no username exists
-        if(result.length < 1) {
+        if(result.length > 0 && bcrypt.compareSync(password, result[0].password)) {
+          // Username exists
+          return done(null, {id: result[0].id, username: result[0].username});
+        } else {
           // errors.push({message: "Username does not exist."});
           // res.render('registration', { errors })
           return done('That user was not found.', false);
-        } else {
-          // Username exists
-          return done(null, {id: result[0].id, })
         }
       })
     })

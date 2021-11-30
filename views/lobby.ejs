@@ -21,6 +21,22 @@
         <div class="create_game_button">
             <button type="button">Create New Game</button>
         </div>
+
+        <ul>
+            <% if(messages.success) { %>
+              <li><%= messages.success %></li>
+            <% } %>
+            <% if(messages.error) { %>
+              <li><%= messages.error %></li>
+            <% } %>
+        </ul>
+
+        <ul>
+            <% if(typeof errors != 'undefined') { %> <% errors.forEach(error => { %>
+              <li><%= error.message %> </li>
+            <% }) %> <% } %>
+        </ul>
+
         <div class="mid">
             <h1>Current Games</h1>
             <p>Green: Open</p>
