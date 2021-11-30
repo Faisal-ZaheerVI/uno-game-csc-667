@@ -11,7 +11,7 @@
         </div>
 
         <div class="logout">
-            <a href="/" class="create">Log Out</a>
+            <a href="/users/logout" class="create">Log Out</a>
         </div>
         
         <div class="form-signin">
@@ -30,6 +30,8 @@
               <li><%= messages.error %></li>
             <% } %>
         </ul>
+
+        <h1>Welcome <%= name %></h1>
 
         <ul>
             <% if(typeof errors != 'undefined') { %> <% errors.forEach(error => { %>

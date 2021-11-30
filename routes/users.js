@@ -2,11 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-const UserModel = require('../models/Users');
-const UserError = require('../helpers/error/UserError');
-// const { successPrint, errorPrint } = require('../helpers/debug/debugprinters');
-// const {registerValidator, loginValidator} = require('../middleware/validation');
-
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 
@@ -87,9 +82,15 @@ router.post('/register', async (req, res, next) => {
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', {
   successRedirect: '/lobby',
-  failureRedirect: '/users/login',
+  failureRedirect: '/login',
   failureFlash: true
   })(req, res, next);
+});
+
+router.get('/logout', function(req, res, next) {
+  req.logout();
+  req.flash('success', 'You have been logged out');
+  res.redirect('/login');
 });
 
 module.exports = router;
