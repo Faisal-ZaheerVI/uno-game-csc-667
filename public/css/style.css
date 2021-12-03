@@ -186,9 +186,12 @@ body {
 
 .game-middle {
   display:flex;
-  align-items:center;
+  align-items: center;
   justify-content: space-between;
   margin: 50px 0;
+  
+
+  width: calc(60vh - 5px);
 }
 
 .middle-card img{

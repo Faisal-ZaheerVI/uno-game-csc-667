@@ -1,4 +1,6 @@
 <%- include("header") -%>
+<script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script defer src="/js/game.js" charset="utf-8"></script>
 
     <div class="home">
         <a href="/" class="create">Home</a>
@@ -32,13 +34,13 @@
         <!-- Player 1 Deck -->
         <!-- 7 random cards -->
         <div class="player1Deck">
-        <img src="assets/Green_0.png" alt="middle card">
-        <img src="assets/Blue_1.png" alt="middle card">
-        <img src="assets/Red_2.png" alt="middle card">
-        <img src="assets/Yellow_3.png" alt="middle card">
-        <img src="assets/Green_4.png" alt="middle card">
-        <img src="assets/Blue_5.png" alt="middle card">
-        <img src="assets/Red_6.png" alt="middle card">
+        <img onclick="cardToCenter()" class="firstCard" src="assets/Green_0.png" alt="middle card">
+        <img onclick="cardToCenter2()" class="secondCard" src="assets/Blue_1.png" alt="middle card">
+        <img onclick="cardToCenter3()" class="thirdCard" src="assets/Red_2.png" alt="middle card">
+        <img onclick="cardToCenter4()" class="fourthCard" src="assets/Yellow_3.png" alt="middle card">
+        <img onclick="cardToCenter5()" class="fifthCard" src="assets/Green_4.png" alt="middle card">
+        <img onclick="cardToCenter6()" class="sixthCard" src="assets/Blue_5.png" alt="middle card">
+        <img onclick="cardToCenter7()" class="seventhCard" src="assets/Red_6.png" alt="middle card">
         </div>
 
         
@@ -48,12 +50,12 @@
         <div class="game-middle">
 
         <!-- Draw card button -->
-        <button type="button" class="btn btn-primary">Draw Card</button>
+        <button class="btn btn-primary" onclick="random()">Draw Card</button>
 
         <!-- Middle Card -->
         <!-- 1 random card -->
         <div class="middle-card">
-        <img src="assets/Wild.png" alt="middle card">
+        <img class="middle-card-image" src="assets/Wild.png" alt="middle card">
         </div>
 
         <!-- Uno button -->
