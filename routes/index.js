@@ -24,8 +24,8 @@ router.get('/lobby', ensureAuthenticated, function(req, res, next) {
   });
 });
 
-router.get('/game', function(req, res, next) {
-  res.render('game');
-});
+// router.get('/game', function(req, res, next) {
+//   res.render('game');
+// });
 
 module.exports = router;

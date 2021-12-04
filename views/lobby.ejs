@@ -19,7 +19,7 @@
 
         <!--Create Game (does not work yet)-->
         <div class="create_game_button">
-            <button type="button">Create New Game</button>
+            <button id="create" type="button">Create New Game</button>
         </div>
 
         <ul>
@@ -58,7 +58,7 @@
                 <td>001</td>
                 <td>0/4</td>
                 <td>Open</td>
-                <td><button type="join-game">Join</button></td>
+                <td><button id="game-listing" type="button" data-id="15">Join</button></td>
             </tr>
             </div>
             <tr class="game-inprogress">
@@ -103,5 +103,7 @@
     </div>
 
     </body>
+
+    <script src="/js/lobby.js" charset="utf-8"></script>
 
 <%- include("footer") -%>
