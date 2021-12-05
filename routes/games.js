@@ -1,4 +1,5 @@
 const express = require('express');
+const { route } = require('.');
 const router = express.Router();
 const Games = require('../db/games');
 
@@ -47,6 +48,15 @@ router.post("/:id/join", (req, res) => {
     // Games.join(1, id)
     // .then(({ id }) => res.json({ id }))
     // .catch(console.log);
+});
+
+router.post("/list", (req, res) => {
+    Games.listGames()
+    .then((results) => {
+        return results;
+    })
+    .then((results) => res.json(results))
+    .catch(console.log);
 });
 
 module.exports = router;
