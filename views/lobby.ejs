@@ -17,7 +17,7 @@
         <div class="form-signin">
         <img class="mb-4" src="images/uno.png" alt="" width="300" height="300">
 
-        <!--Create Game (does not work yet)-->
+        <!--Create Game-->
         <div class="create_game_button">
             <button id="create" type="button">Create New Game</button>
         </div>
@@ -46,6 +46,7 @@
         </div>
         <!--To do: iterate tables by # games available-->
         <!--Also to do: grey out join when in progress-->
+        <!--Currently hardcoded to include # games in games.js-->
         <table>
             <tr>
                 <td>Game Number</td>
@@ -58,7 +59,7 @@
                 <td>001</td>
                 <td>0/4</td>
                 <td>Open</td>
-                <td><button id="game-listing" type="button" data-id="15">Join</button></td>
+                <td><a class="join" id="1">Join Game</a></td>
             </tr>
             </div>
             <tr class="game-inprogress">
@@ -71,7 +72,7 @@
                 <td>003</td>
                 <td>2/4</td>
                 <td>Open</td>
-                <td><button type="join-game">Join</button></td>
+                <td><a class="join" id="2">Join Game</a></td>
             </tr>
             <!-- To be implemented - link front-end to back end through {}
             <tr>
