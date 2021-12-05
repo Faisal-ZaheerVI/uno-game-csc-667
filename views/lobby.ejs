@@ -44,6 +44,55 @@
             <p>Green: Open</p>
             <p>Red: In Progress</p>
         </div>
+
+        <!-- List of Active Games (Faisal) -->
+        <div id="games-container">
+            <div class="games-table">
+                <div class="games-row games-open">
+                    <div class="games-column">Game Title</div>
+                    <div class="games-column">0/4</div>
+                    <div class="games-column">Open</div>
+                    <div class="games-column">
+                        <button id="game-listing" type="button" data-id="15">Join</button>
+                    </div>
+                </div>
+            </div>
+            <div class="games-table">
+                <div class="games-row">
+                    <div class="games-column">Zaheer's game</div>
+                    <div class="games-column">4/4</div>
+                    <div class="games-column">In Progress</div>
+                    <div class="games-column">
+                        <button id="" type="button" data-id="">Join</button>
+                    </div>
+                </div>
+            </div>
+            <div class="games-table">
+                <div class="games-row">
+                    <div class="games-column">New game</div>
+                    <div class="games-column">1/4</div>
+                    <div class="games-column">Open</div>
+                    <div class="games-column">Join</div>
+                </div>
+            </div>
+            <div class="games-table">
+                <div class="games-row">
+                    <div class="games-column">Test game</div>
+                    <div class="games-column">3/4</div>
+                    <div class="games-column">Open</div>
+                    <div class="games-column">Join</div>
+                </div>
+            </div>
+            <div class="games-table">
+                <div class="games-row">
+                    <div class="games-column">Another game</div>
+                    <div class="games-column">2/4</div>
+                    <div class="games-column">Open</div>
+                    <div class="games-column">Join</div>
+                </div>
+            </div>
+        </div>
+
         <!--To do: iterate tables by # games available-->
         <!--Also to do: grey out join when in progress-->
         <!--Currently hardcoded to include # games in games.js-->
@@ -55,12 +104,13 @@
                 <td>Join</td>
             </tr>
             <div class="game-open">
-            <tr>
-                <td>001</td>
-                <td>0/4</td>
-                <td>Open</td>
-                <td><a class="join" id="1">Join Game</a></td>
-            </tr>
+                <tr>
+                    <td>001</td>
+                    <td>0/4</td>
+                    <td>Open</td>
+                    <!-- <td><a class="join" id="1">Join Game</a></td> -->
+                    <td><button id="game-listing" type="button" data-id="15">Join</button></td>
+                </tr>
             </div>
             <tr class="game-inprogress">
                 <td>002</td>
@@ -86,21 +136,23 @@
 
         <!--Delete Game (does not work yet)-->
         <!--Must only delete games started by the user who created it-->
-        <div class="delete_game_button">
+        <!-- Delete games not required, professor says to avoid deleting entries from table like games ~ Faisal -->
+        <!-- <div class="delete_game_button">
             <button type="button">Delete a Game</button>
-        </div>
-        <div class="users_waiting">
+        </div> -->
+
+        <!-- <div class="users_waiting">
             <table>
                 <tr>
                     <td>Users Waiting for a Game</td>
                 </tr>
-                <tr>
+                <tr> -->
                     <!--Eventually must iterate through the user database-->
-                    <td>None</td>
+                    <!-- <td>None</td> -->
                     <!--<td>{users-waiting}</td>-->
-                </tr>
+                <!-- </tr>
             </table>
-        </div>
+        </div> -->
     </div>
 
     </body>
