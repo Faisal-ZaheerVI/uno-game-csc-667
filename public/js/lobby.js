@@ -1,5 +1,4 @@
-console.log("hi");
-
+// Create a game by clicking element with id="create"
 document.querySelector('#create').addEventListener('click', event => {
     event.preventDefault();
     
@@ -11,6 +10,7 @@ document.querySelector('#create').addEventListener('click', event => {
     .catch(console.log);
 });
 
+// Join a game by clicking element with id="game-listing"
 document.querySelector('#game-listing').addEventListener('click', event => {
     event.preventDefault();
 

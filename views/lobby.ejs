@@ -46,7 +46,7 @@
         </div>
 
         <!-- List of Active Games (Faisal) -->
-        <div id="games-container">
+        <!-- <div id="games-container">
             <div class="games-table">
                 <div class="games-row games-open">
                     <div class="games-column">Game Title</div>
@@ -91,6 +91,21 @@
                     <div class="games-column">Join</div>
                 </div>
             </div>
+        </div> -->
+
+        <div id="games-container">
+            <% for (var i = 0; i < games.length; i++) { %>
+                <div class="games-table">
+                    <div class="games-row">
+                        <div class="games-column"><%= games[i].title %></div>
+                        <div class="games-column">0/4</div>
+                        <div class="games-column">In Progress</div>
+                        <div class="games-column">
+                            <button id="" type="button" data-id="">Join</button>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
         </div>
 
         <!--To do: iterate tables by # games available-->

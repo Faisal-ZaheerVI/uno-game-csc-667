@@ -1,9 +1,9 @@
-const { result } = require('../db');
 const db = require('../db');
 
 const CREATE_GAME = 'INSERT INTO games (direction, title, created) VALUES (0, $1, $2) RETURNING id';
 const INSERT_CARD_QUERY = 'INSERT INTO game_cards (card_id, game_id, user_id, "order", discarded, draw_pile) VALUES (${card_id}, ${game_id}, ${user_id}, ${order}, 0, 1)';
 const INSERT_USER = 'INSERT INTO game_players (game_id, user_id, current_player, "order") VALUES (${game_id}, ${user_id}, 0, ${order}) RETURNING game_id AS id';
+const LIST_OF_GAMES = 'SELECT * FROM games';
 
 // Sets up a valid default game state when a game is created.
 // Could add number of users we want per game (i.e. 4 players)
@@ -44,8 +44,13 @@ const userCount = (game_id) =>
         { game_id }
         );
 
+const listGames = () => {
+    return db.any(LIST_OF_GAMES);
+}
+
 module.exports = {
     create, 
     join, 
-    userCount
+    userCount,
+    listGames
 }
