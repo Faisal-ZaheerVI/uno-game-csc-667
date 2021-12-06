@@ -1,3 +1,5 @@
+const socket = io();
+
 // Adds each db game to games list on lobby page with unique listing(title, id)
 // with button to redirect to each unique game page.
 function createGameListing(gameData) {
@@ -71,49 +73,51 @@ document.querySelector('#create').addEventListener('click', event => {
     .catch(console.log);
 });
 
-// var gamesByClass = document.querySelectorAll('.game-listing');
-// for(var i = 0; i < gamesByClass.length; i++) {
-//     console.log(gamesByClass[i]);
-//     gamesByClass[i].addEventListener('click', function() {
-//         console.log("Clicked!");
-//     });
-// }
+// Join a game by clicking element with id="game-listing"
+// document.querySelector('.game-listing-test').addEventListener('click', event => {
+//     event.preventDefault();
 
-// Attempted to make all buttons workable (found alternative fix with onclick for buttons for now)
+//     const { id } = event.target.dataset;
 
-// document.querySelectorAll('.game-listing').forEach((game) => {
-//     console.log("new test");
-//     console.log(game);
-//     game.addEventListener('click', event => {
-//         event.preventDefault();
-
-//         const { id } = event.target.dataset;
-//         console.log(id);
-
-//         fetch(`/games/${id}/join`, { method: 'post' })
-//         .then((response) => response.json())
-//         .then(({ id }) => {
+//     fetch(`/games/${id}/join`, { method: 'post' })
+//     .then((response) => response.json())
+//     .then(({ id }) => {
+//         if({id}.id != -1) {
+//             console.log("Front-end side worked!");
 //             window.location.replace(`/games/${id}`);
-//         })
-//         .catch(console.log);
-//     });
+//         } else {
+//             console.log("GAME IS FULL!!! (Front-end)");
+//         }
+//     })
+//     .catch(console.log);
 // });
 
-// Join a game by clicking element with id="game-listing"
-document.querySelector('.game-listing-test').addEventListener('click', event => {
+/* CHAT JS */
+socket.on('message', message => {
+    console.log(message);
+    outputMessage(message);
+});
+
+const chatForm = document.getElementById('lobby-chat-form');
+chatForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
-    const { id } = event.target.dataset;
+    // Get message text by id
+    const msg = event.target.elements.lobbymsg.value;
 
-    fetch(`/games/${id}/join`, { method: 'post' })
-    .then((response) => response.json())
-    .then(({ id }) => {
-        if({id}.id != -1) {
-            console.log("Front-end side worked!");
-            window.location.replace(`/games/${id}`);
-        } else {
-            console.log("GAME IS FULL!!! (Front-end)");
-        }
-    })
-    .catch(console.log);
+    // Emitting a message to the server
+    socket.emit('chatMessage', msg);
 });
+
+// Output message to DOM
+function outputMessage(message) {
+    const div = document.createElement('div');
+    div.classList.add('message');
+    div.innerHTML = `<p class="chat-user">Brad <span>9:12pm</span> </p>
+    <p class="chat-text">
+        ${message}
+    </p>`;
+    let chatMsgs = document.querySelector('.chat-messages')
+    chatMsgs.appendChild(div);
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+}

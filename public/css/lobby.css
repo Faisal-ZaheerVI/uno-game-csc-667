@@ -1,4 +1,18 @@
+#lobby-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: 
+    "header header header"
+    "gamesarea gamesarea chatarea";
+}
+
+#lobby-header {
+    grid-area: header;
+}
+
 #games-container {
+    grid-area: gamesarea;
     position: relative;
     float: right;
     width: 100%;
@@ -59,3 +73,8 @@
     color:red;
     box-shadow: 0 0 5px -1px rgba(0,0,0,0.6);
 }
+
+#lobby-chat-container {
+    grid-area: chatarea;
+}
+
