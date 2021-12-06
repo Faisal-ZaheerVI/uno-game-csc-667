@@ -104,6 +104,25 @@ body {
   background-color: grey;
 }
 
+.games-list {
+  position:relative;
+}
+
+.games-scroll {
+  height: 150px;
+  overflow: auto;
+  margin-top: 20px;
+}
+
+.games-list table {
+  width:100%;
+}
+
+.games-list table thead th .text {
+  position:absolute;
+  border: 1px black
+}
+
 
 .open-chat {
   color: white;
