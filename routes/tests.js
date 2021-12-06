@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require('../db');
+const tables = require("../db/table_names");
 
 router.get("/", (request, response) => {
     db.any(
@@ -13,5 +14,38 @@ router.get("/", (request, response) => {
         response.json({ error });
     });
 });
+
+// router.get("/tables", (req, res) => {
+//     Promise.all(
+//         Object.keys(tables).map((tableName) =>
+//             db.any(`SELECT * FROM ${tables[tableName]}`)
+//             .then((result) => ({
+//             tableName,
+//             result,
+//             fields: Object.keys(result[0] || {}),
+//             }))
+//         )
+//     )
+//     .then((results) => {
+//         console.log(results);
+//         return results;
+//     })
+//     .then((results) => {
+//         let dataTables = [];
+//         let dataResults = [];
+//         let dataFields = [];
+//         for(var i = 0; i < results.length; i++) {
+//             dataTables.push(results[i].tableName);
+//             dataResults.push(results[i].result);
+//             dataFields.push(results[i].fields);
+//         }
+
+//         res.render("test/tables", {
+//             tableNames: dataTables,
+//             data: dataResults,
+//             fields: dataFields
+//         })
+//     })
+// });
 
 module.exports = router;

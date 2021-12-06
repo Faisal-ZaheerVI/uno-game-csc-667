@@ -39,17 +39,27 @@ router.post("/create", (req, res) => {
 router.post("/:id/join", (req, res) => {
     const { id } = req.params; // Game_id to join specific game by URL
 
+    // Games.join(req.user.id, id)
+    // .then(({ id }) => {
+    //     if({id}.id == -1) {
+    //         let errors = [];
+    //         errors.push({message: "Game is full!"});
+    //         res.render('lobby', { errors, name: req.user.username });
+    //     } else {
+    //         // res.json({ id });
+    //         res.redirect('/games/'+{id}.id, { id });
+    //     }
+    // })
+    // .catch(console.log);
+
     // Current logged in user (req.user.id) wants to join game by game_id = id
     Games.join(req.user.id, id)
     .then(({ id }) => res.json({ id }))
     .catch(console.log);
-
-    // Currently hard coded as if user_id = 1 (username = test1) has joined
-    // Games.join(1, id)
-    // .then(({ id }) => res.json({ id }))
-    // .catch(console.log);
+    
 });
 
+/* LISTS ALL GAMES FROM DATABASE */
 router.post("/list", (req, res) => {
     Games.listGames()
     .then((results) => {

@@ -7,15 +7,19 @@ function createGameListing(gameData) {
                     <div class="games-column">0/4</div>
                     <div class="games-column">In Progress</div>
                     <div class="games-column">
-                        <button class="game-listing" type="button" data-id="${gameData.id}"" onclick="window.location.href='/games/${gameData.id}'">Join</button>
+                        <div id="activegame${gameData.id}" class="game-listing" data-id="${gameData.id}">Join</div>
                     </div>
                 </div>
             </div>`;
 }
 
+// onclick="window.location.href='/games/${gameData.id}/join'"
+// formaction="/games/${gameData.id}/join"
+
+// Upon loading the /lobby page, page will fetch and display all games from db.
 window.addEventListener('DOMContentLoaded', (event) => {
     let gamesListing = document.getElementById('games-container');
-    console.log("test");
+    // Retrieves list of games from db from fetch call to /games/list
     fetch(`/games/list`, { method: 'post' })
     .then((response) => response.json())
     .then((results) => {
@@ -23,10 +27,30 @@ window.addEventListener('DOMContentLoaded', (event) => {
         for(var i = 0; i < results.length; i++) {
             newGamesListing += createGameListing(results[i]);
         }
-        // results.array.forEach((game) => {
-        //     newGamesListing += createGameListing(game);
-        // });
+        // Appends all active games to 'games-container' div in lobby.ejs
         gamesListing.innerHTML = newGamesListing;
+        for(var i = 0; i < results.length; i++) {
+            document.querySelector(`#activegame${results[i].id}`)
+                    .addEventListener('click', event => {
+                        event.preventDefault();
+                
+                        const { id } = event.target.dataset;
+                        console.log(id);
+                
+                        fetch(`/games/${id}/join`, { method: 'post' })
+                        .then((response) => response.json())
+                        .then(({ id }) => {
+                            if({id}.id != -1) {
+                                console.log("Front-end side worked!");
+                                window.location.replace(`/games/${id}`);
+                            } else {
+                                console.log("GAME IS FULL!!! (Front-end)");
+                            }
+                        })
+                        .catch(console.log);
+                    });
+        }
+        return results;
     })
     .catch(console.log);
 });
@@ -42,6 +66,14 @@ document.querySelector('#create').addEventListener('click', event => {
     })
     .catch(console.log);
 });
+
+// var gamesByClass = document.querySelectorAll('.game-listing');
+// for(var i = 0; i < gamesByClass.length; i++) {
+//     console.log(gamesByClass[i]);
+//     gamesByClass[i].addEventListener('click', function() {
+//         console.log("Clicked!");
+//     });
+// }
 
 // Attempted to make all buttons workable (found alternative fix with onclick for buttons for now)
 
@@ -72,7 +104,12 @@ document.querySelector('.game-listing-test').addEventListener('click', event => 
     fetch(`/games/${id}/join`, { method: 'post' })
     .then((response) => response.json())
     .then(({ id }) => {
-        window.location.replace(`/games/${id}`);
+        if({id}.id != -1) {
+            console.log("Front-end side worked!");
+            window.location.replace(`/games/${id}`);
+        } else {
+            console.log("GAME IS FULL!!! (Front-end)");
+        }
     })
     .catch(console.log);
 });
