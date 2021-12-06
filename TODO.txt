@@ -1,0 +1,16 @@
+Create Games:
+    - (Optional) Fix link redirect when user creates new game? 
+    (Currently goes to /games/create literal link instead of /game/:id)
+
+Join Games: 
+    - Check to see if user_id that joined is already part of the game_id 
+    (don't want i.e. game_id = 1 having two players identified as user_id = 5, want 4 unique user_id players)
+
+Chat:
+    - Implement Socket Chat
+    - Find place on Lobby Page for Chat + Chatbox
+    - Find place on Game page for Chat + Chatbox
+
+Game:
+    - Start implementing game logic
+    - Implement interactions (Socket?)

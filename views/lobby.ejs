@@ -22,6 +22,11 @@
             <button id="create" type="button">Create New Game</button>
         </div>
 
+        <form action="/games/create" method="POST" enctype="application/x-www-form-urlencoded">
+            <input type="text" name="title" placeholder="Create a Match Name" required>
+            <button type="submit">Create New Game</button>
+        </form>
+
         <ul>
             <% if(messages.success) { %>
               <li><%= messages.success %></li>
@@ -46,62 +51,15 @@
         </div>
 
         <!-- List of Active Games (Faisal) -->
-        <!-- <div id="games-container">
-            <div class="games-table">
-                <div class="games-row games-open">
-                    <div class="games-column">Game Title</div>
-                    <div class="games-column">0/4</div>
-                    <div class="games-column">Open</div>
-                    <div class="games-column">
-                        <button id="game-listing" type="button" data-id="15">Join</button>
-                    </div>
-                </div>
-            </div>
-            <div class="games-table">
-                <div class="games-row">
-                    <div class="games-column">Zaheer's game</div>
-                    <div class="games-column">4/4</div>
-                    <div class="games-column">In Progress</div>
-                    <div class="games-column">
-                        <button id="" type="button" data-id="">Join</button>
-                    </div>
-                </div>
-            </div>
-            <div class="games-table">
-                <div class="games-row">
-                    <div class="games-column">New game</div>
-                    <div class="games-column">1/4</div>
-                    <div class="games-column">Open</div>
-                    <div class="games-column">Join</div>
-                </div>
-            </div>
-            <div class="games-table">
-                <div class="games-row">
-                    <div class="games-column">Test game</div>
-                    <div class="games-column">3/4</div>
-                    <div class="games-column">Open</div>
-                    <div class="games-column">Join</div>
-                </div>
-            </div>
-            <div class="games-table">
-                <div class="games-row">
-                    <div class="games-column">Another game</div>
-                    <div class="games-column">2/4</div>
-                    <div class="games-column">Open</div>
-                    <div class="games-column">Join</div>
-                </div>
-            </div>
-        </div> -->
-
-        <div id="games-container">
-            
-        </div>
+        <!-- Main Container to store list of active games! -->
+        <div id="games-container"></div>
 
         <!--To do: iterate tables by # games available-->
         <!--Also to do: grey out join when in progress-->
         <!--Currently hardcoded to include # games in games.js-->
-        <div class="games-list">
-        <div class="games-scroll">
+        <!-- <div class="games-list">
+        <div class="games-scroll"> -->
+
         <table>
             <tr>
                 <td>Game Number</td>

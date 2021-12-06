@@ -25,10 +25,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
     .then((results) => {
         let newGamesListing = '';
         for(var i = 0; i < results.length; i++) {
+            // Creates HTML template and fills data for each active game listing.
             newGamesListing += createGameListing(results[i]);
         }
+        
         // Appends all active games to 'games-container' div in lobby.ejs
         gamesListing.innerHTML = newGamesListing;
+
+        // Adds click event to each created game's Join button
         for(var i = 0; i < results.length; i++) {
             document.querySelector(`#activegame${results[i].id}`)
                     .addEventListener('click', event => {

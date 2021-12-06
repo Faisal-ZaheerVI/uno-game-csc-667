@@ -17,12 +17,15 @@ router.get("/:id", function (req, res, next) {
 router.post("/create", (req, res) => {
 
     // Req.user.id gets the user_id of the current logged in user.
-    Games.create(req.user.id)
+    Games.create(req.user.id, req.body.title)
     .then((id) => { 
         console.log(id);
         return id; 
     })
-    .then(({ id }) => res.json({ id }))
+    // .then(({ id }) => res.json({ id }))
+    .then(({id}) => {
+        res.render('game', { id });
+    })
     .catch(console.log);
 
     // Currently hard coded as if user_id = 5 (username = admin) has created new game
