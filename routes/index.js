@@ -41,6 +41,10 @@ router.get('/lobby', ensureAuthenticated, function(req, res, next) {
 
 });
 
+router.get('/user', function(req, res) {
+  res.send(req.user);
+})
+
 // router.get('/game', function(req, res, next) {
 //   res.render('game');
 // });

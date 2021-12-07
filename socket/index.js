@@ -24,6 +24,11 @@ const init = ( app, server ) => {
     socket.on('chatMessage', (msg) => {
       io.emit('message', msg);
     });
+
+    socket.on('getuser', (username) => {
+      io.emit('getuser', username);
+    })
+
   });
 };
 

@@ -94,8 +94,14 @@ document.querySelector('#create').addEventListener('click', event => {
 
 /* CHAT JS */
 socket.on('message', message => {
-    console.log(message);
-    outputMessage(message);
+    fetch('/user', { method: 'get' })
+    .then((response) => response.json())
+    .then((user) => {
+        // Returns user object with fields user.id and user.username
+        console.log(message);
+        outputMessage(message, user.username);
+    })
+    .catch(console.log);
 });
 
 const chatForm = document.getElementById('lobby-chat-form');
@@ -110,10 +116,12 @@ chatForm.addEventListener('submit', (event) => {
 });
 
 // Output message to DOM
-function outputMessage(message) {
+function outputMessage(message, username) {
+    // Creates div element for each message to add to chat-messages container.
     const div = document.createElement('div');
     div.classList.add('message');
-    div.innerHTML = `<p class="chat-user">Brad <span>9:12pm</span> </p>
+    // TODO: Replace Date object with Moment.js?
+    div.innerHTML = `<p class="chat-user">${username} <span>${new Date().toLocaleString()}</span> </p>
     <p class="chat-text">
         ${message}
     </p>`;
