@@ -20,10 +20,11 @@
             <img class="mb-4" src="images/uno.png" alt="" width="300" height="300">
     
             <!--Create Game-->
-            <!-- <div class="create_game_button">
-                <button id="create" type="button">Create New Game</button>
+            <!-- Need this button for chat! -->
+            <div class="create_game_button">
+                <button id="create" type="button"></button>
             </div>
-     -->
+    
             <form action="/games/create" method="POST" enctype="application/x-www-form-urlencoded">
                 <input type="text" name="title" placeholder="Create a Match Name" required>
                 <button type="submit">Create New Game</button>
