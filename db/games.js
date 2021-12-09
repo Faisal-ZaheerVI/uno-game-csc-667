@@ -28,7 +28,7 @@ const create = (user_id, title) =>
         // Insert them in shuffled order into games_cards table
         Promise.all([
             { id }, 
-            ... cards.map((card) => db.any(INSERT_CARD_QUERY, {card_id: card.id, game_id: id, user_id: 5, order: Math.floor(Math.random()*100) }))
+            ... cards.map((card) => db.any(INSERT_CARD_QUERY, {card_id: card.id, game_id: id, user_id: user_id, order: Math.floor(Math.random()*100) }))
         ])
     )
     // Return the game_id as id (for front end to redirect as /games/id)
