@@ -127,25 +127,27 @@
 
         <!-- Need this button for chat! -->
         <div class="create_game_button">
-            <button id="create" type="button"></button>
+            <h1 id="create"></h1>
         </div>
 
 
         <div id="lobby-chat-container">
-            <div class="chat-messages">
-                <div class="message">
-                    <p class="chat-user">Brad <span>9:12pm</span> </p>
-                    <p class="chat-text">This is a template message in the chat.</p>
-                </div>
-                <div class="message">
-                    <p class="chat-user">John <span>9:17pm</span> </p>
-                    <p class="chat-text">This is another template message in the chat.</p>
-                </div>
+           <div class="chat-messages">
+                    <div class="message">
+                        <p class="chat-user">Brad <span>9:12pm</span> </p>
+                        <p class="chat-text">This is a template message in the chat.</p>
+                    </div>
+                    <div class="message">
+                        <p class="chat-user">John <span>9:17pm</span> </p>
+                        <p class="chat-text">This is another template message in the chat.</p>
+                    </div>
             </div>
+                
+           
             <div id="lobby-chatbox" class="chatbox">
                 <form id="lobby-chat-form">
-                    <input id="lobbymsg" type="text" placeholder="Enter message" required>
-                    <button class="chat-btn">Send</button>
+                        <input id="lobbymsg" type="text" placeholder="Enter message" required>
+                    <button class="chat-btn btn btn-success">Send</button>
                 </form>
             </div>
         </div>
