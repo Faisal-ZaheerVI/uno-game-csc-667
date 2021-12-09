@@ -61,10 +61,13 @@
         </div>
 
         <!-- Uno button -->
-        <button type="button" class="btn btn-danger">Uno</button>
+        <button type="button" class="btn btn-danger" onclick="uno()">Uno</button>
 
         <!-- Leave Game button -->
-        <button type="button" class="btn btn-warning">Leave Game</button>
+        
+        <button type="button" class="btn btn-warning" onclick="location.href='/'">Leave Game</button>
+      
+        
 
         </div>
 
@@ -125,26 +128,35 @@
 
         </div>
 
-
-
-        <!--TO IMPLEMENT GAME LINK TO BACKEND-->
-        <button class="open-chat" onclick>Chat</button>
-        <!--TO IMPLEMENT FULL CHAT WINDOW OPTION-->
-        <div class="messages">
-            <!-- For each message in chat, display here -->
-
+        <!-- Need this button for chat! -->
+        <div class="create_game_button">
+            <h1 id="create"></h1>
         </div>
-        <div class="chat" id="form">
-            <form class="form" action="/comments/create" method="POST" enctype="application/x-www-form-urlencoded">
-                <h1>Chat</h1>
-                <label for="msg"><b>Message</b></label>
-                <textarea placeholder="Type message" name="comment"></textarea>
 
-                <button type="submit" class="btn">Send</button>
-                <button type="button" class="cancel">Close</button>
-            </form>
+
+        <div id="lobby-chat-container">
+           <div class="chat-messages">
+                    <div class="message">
+                        <p class="chat-user">Brad <span>9:12pm</span> </p>
+                        <p class="chat-text">This is a template message in the chat.</p>
+                    </div>
+                    <div class="message">
+                        <p class="chat-user">John <span>9:17pm</span> </p>
+                        <p class="chat-text">This is another template message in the chat.</p>
+                    </div>
+            </div>
+                
+           
+            <div id="lobby-chatbox" class="chatbox">
+                <form id="lobby-chat-form">
+                        <input id="lobbymsg" type="text" placeholder="Enter message" required>
+                    <button class="chat-btn btn btn-success">Send</button>
+                </form>
+            </div>
         </div>
-    </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/lobby.js" charset="utf-8"></script>
 
 
     <%- include("footer") -%>

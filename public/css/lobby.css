@@ -76,5 +76,21 @@
 
 #lobby-chat-container {
     grid-area: chatarea;
+    
 }
 
+.chat-user {
+    color: #292C6D;
+}
+
+.chat-text {
+    color: #161853;
+}
+
+#lobbymsg {
+    margin-top: 10px;
+}
+
+.chat {
+    background-color: #edf1fc;
+}

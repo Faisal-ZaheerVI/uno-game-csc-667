@@ -20,8 +20,9 @@
             <img class="mb-4" src="images/uno.png" alt="" width="300" height="300">
     
             <!--Create Game-->
+            <!-- Need this button for chat! -->
             <div class="create_game_button">
-                <button id="create" type="button">Create New Game</button>
+                <h1 id="create"></h1>
             </div>
     
             <form action="/games/create" method="POST" enctype="application/x-www-form-urlencoded">
@@ -71,7 +72,7 @@
             <div id="lobby-chatbox" class="chatbox">
                 <form id="lobby-chat-form">
                     <input id="lobbymsg" type="text" placeholder="Enter message" required>
-                    <button class="chat-btn">Send</button>
+                    <button class="chat-btn btn btn-success">Send</button>
                 </form>
             </div>
         </div>

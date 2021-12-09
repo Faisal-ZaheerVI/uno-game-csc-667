@@ -1,3 +1,6 @@
+Migrations:
+    - Create separate migrations for each table!!!
+
 Create Games:
     - (Optional) Fix link redirect when user creates new game? 
     (Currently goes to /games/create literal link instead of /game/:id)
@@ -9,6 +12,8 @@ Join Games:
 Chat:
     - Implement Socket Chat (IN PROGRESS)
     - Lobby Page Chat:
+        - Fix error that shows any sent message as being from you (current logged in user)
+        even if someone else connected to server sent the message.
         - Stylize and Fix Lobby Chat + Chatbox with CSS (design, formatting, etc.)
         - (Optional) Replace Date Object with Moment.js?
         - (DONE) Assign User's username to chat message name
@@ -19,3 +24,6 @@ Chat:
 Game:
     - Start implementing game logic
     - Implement interactions (Socket?)
+
+Heroku:
+    - Figure out Heroku postinstall issues, and whatever other issues!

@@ -75,4 +75,8 @@ function cardToCenter7() {
     
 }
 
+function uno() {
+  alert("Winner winner chicken dinner!")
+}
+
 
