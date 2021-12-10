@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "engines": {
-    "node": "15.x"
+    "node": ">=15.x",
+    "npm": ">=8.1.0"
   },
   "scripts": {
     "start": "node ./bin/www",

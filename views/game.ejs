@@ -60,6 +60,7 @@
             <!-- Draw card button -->
             <button class="btn btn-primary" onclick="random()">Draw Card</button>
 
+<<<<<<< HEAD
             <!-- Middle Card -->
             <!-- 1 random card -->
             <div class="middle-card">
@@ -68,6 +69,25 @@
 
             <!-- Uno button -->
             <button type="button" class="btn btn-danger">Uno</button>
+=======
+        <!-- Draw card button -->
+        <button class="btn btn-primary" onclick="random()">Draw Card</button>
+
+        <!-- Middle Card -->
+        <!-- 1 random card -->
+        <div class="middle-card">
+        <img class="middle-card-image" src="../assets/Wild.png" alt="middle card">
+        </div>
+
+        <!-- Uno button -->
+        <button type="button" class="btn btn-danger" onclick="uno()">Uno</button>
+
+        <!-- Leave Game button -->
+        
+        <button type="button" class="btn btn-warning" onclick="location.href='/'">Leave Game</button>
+      
+        
+>>>>>>> 2f1fd2e99386d987b70838346c89b56c38962c92
 
             <!-- Leave Game button -->
             <!-- <button type="button" class="btn btn-warning">Leave Game</button> -->
@@ -126,6 +146,7 @@
             </div>
         </div>
 
+<<<<<<< HEAD
         <!-- For each message in chat, display here -->
         <!-- <div class="messages"></div>
         <div class="chat" id="form">
@@ -141,6 +162,37 @@
 
     </div>
 </body>
+=======
+        <!-- Need this button for chat! -->
+        <div class="create_game_button">
+            <h1 id="create"></h1>
+        </div>
+
+
+        <div id="lobby-chat-container">
+           <div class="chat-messages">
+                    <div class="message">
+                        <p class="chat-user">Brad <span>9:12pm</span> </p>
+                        <p class="chat-text">This is a template message in the chat.</p>
+                    </div>
+                    <div class="message">
+                        <p class="chat-user">John <span>9:17pm</span> </p>
+                        <p class="chat-text">This is another template message in the chat.</p>
+                    </div>
+            </div>
+                
+           
+            <div id="lobby-chatbox" class="chatbox">
+                <form id="lobby-chat-form">
+                        <input id="lobbymsg" type="text" placeholder="Enter message" required>
+                    <button class="chat-btn btn btn-success">Send</button>
+                </form>
+            </div>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/lobby.js" charset="utf-8"></script>
+>>>>>>> 2f1fd2e99386d987b70838346c89b56c38962c92
 
 <script src="/js/game.js" charset="utf-8"></script>
 

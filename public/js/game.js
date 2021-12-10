@@ -13,6 +13,7 @@ function createGameUsersListing(user) {
     return `<p>${user}</p>`;
 }
 
+<<<<<<< HEAD
 window.addEventListener('DOMContentLoaded', (event) => {
     let usersListing = document.getElementById('current-players');
     let username = '';
@@ -39,4 +40,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /* FRONT-END GAME LOGIC */
+=======
+function uno() {
+  alert("Winner winner chicken dinner!")
+}
+
+>>>>>>> 2f1fd2e99386d987b70838346c89b56c38962c92
 
