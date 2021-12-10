@@ -46,7 +46,8 @@ module.exports = {
       },
       displayName: {
         allowNull: false,
-        // 0-9 , 10=Skip, 11=Reverse, 12="+2", 13=Wild (Choose color), 14="+4" (Choose color)
+        // Colors: 0-9 , Draw 2, Reverse, Skip. ()
+        // Wild: Wild, Draw 4
         type: Sequelize.STRING
       }
     });

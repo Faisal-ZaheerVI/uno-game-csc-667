@@ -64,4 +64,14 @@ router.get("/:id/users", (req, res) => {
     .catch(console.log);
 });
 
+/* PLAYS A CARD IN GAME #(:id) */
+router.post("/:id/play", (req, res, next) => {
+
+});
+
+/* DRAWS A CARD IN GAME #(:id) */
+router.post("/:id/draw", (req, res, next) => {
+
+});
+
 module.exports = router;
