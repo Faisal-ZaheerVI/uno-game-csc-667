@@ -1,6 +1,8 @@
 <%- include("header") -%>
 <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script defer src="/js/game.js" charset="utf-8"></script>
+<script defer src="/js/game-cards.js" charset="utf-8"></script>
+
+<body class="text-center">
 
     <div class="home">
         <a href="/" class="create">Home</a>
@@ -15,7 +17,7 @@
     </div>
 
     <div class="logout">
-        <a href="/" class="create">Log Out</a>
+        <a href="/users/logout" class="create">Log Out</a>
     </div>
 
 
@@ -28,7 +30,12 @@
             <h1>Welcome to Game <%= id %></h1>
         <% } %>
 
-        <div class="user">
+        <h1>You are playing with:</h1>
+        <div id="current-players"></div>
+
+        <br>
+
+        <div id="current-user">
             <!-- Player 1 -->
             <h1>User</h1>
         </div>
@@ -36,13 +43,13 @@
         <!-- Player 1 Deck -->
         <!-- 7 random cards -->
         <div class="player1Deck">
-        <img onclick="cardToCenter()" class="firstCard" src="../assets/Green_0.png" alt="middle card">
-        <img onclick="cardToCenter2()" class="secondCard" src="../assets/Blue_1.png" alt="middle card">
-        <img onclick="cardToCenter3()" class="thirdCard" src="../assets/Red_2.png" alt="middle card">
-        <img onclick="cardToCenter4()" class="fourthCard" src="../assets/Yellow_3.png" alt="middle card">
-        <img onclick="cardToCenter5()" class="fifthCard" src="../assets/Green_4.png" alt="middle card">
-        <img onclick="cardToCenter6()" class="sixthCard" src="../assets/Blue_5.png" alt="middle card">
-        <img onclick="cardToCenter7()" class="seventhCard" src="../assets/Red_6.png" alt="middle card">
+            <img onclick="cardToCenter()" class="firstCard" src="../assets/Green_0.png" alt="middle card">
+            <img onclick="cardToCenter2()" class="secondCard" src="../assets/Blue_1.png" alt="middle card">
+            <img onclick="cardToCenter3()" class="thirdCard" src="../assets/Red_2.png" alt="middle card">
+            <img onclick="cardToCenter4()" class="fourthCard" src="../assets/Yellow_3.png" alt="middle card">
+            <img onclick="cardToCenter5()" class="fifthCard" src="../assets/Green_4.png" alt="middle card">
+            <img onclick="cardToCenter6()" class="sixthCard" src="../assets/Blue_5.png" alt="middle card">
+            <img onclick="cardToCenter7()" class="seventhCard" src="../assets/Red_6.png" alt="middle card">
         </div>
 
         
@@ -50,90 +57,77 @@
 
 
         <div class="game-middle">
+            <!-- Draw card button -->
+            <button class="btn btn-primary" onclick="random()">Draw Card</button>
 
-        <!-- Draw card button -->
-        <button class="btn btn-primary" onclick="random()">Draw Card</button>
-
-        <!-- Middle Card -->
-        <!-- 1 random card -->
-        <div class="middle-card">
-        <img class="middle-card-image" src="../assets/Wild.png" alt="middle card">
-        </div>
-
-        <!-- Uno button -->
-        <button type="button" class="btn btn-danger">Uno</button>
-
-        <!-- Leave Game button -->
-        <button type="button" class="btn btn-warning">Leave Game</button>
-
-        </div>
-
-  <div class="enemies">
-      
-  
-        <!-- Player 2 Deck -->
-        <!-- 7 random cards -->
-        <div class="player2Deck">
-        <img src="../assets/Deck.png" alt="middle card">
-        <img src="../assets/Deck.png" alt="middle card">
-        <img src="../assets/Deck.png" alt="middle card">
-        <img src="../assets/Deck.png" alt="middle card">
-        <img src="../assets/Deck.png" alt="middle card">
-        <img src="../assets/Deck.png" alt="middle card">
-        <img src="../assets/Deck.png" alt="middle card">
-        </div>
-
-        <div class="player2">
-<!-- Player 2 -->
-<h2>Player 2</h2>
-        </div>
-        
-
-        <!-- Player 3 Deck -->
-        <!-- 7 random cards -->
-        <div class="player2Deck">
-            <img src="../assets/Deck.png" alt="middle card">
-            <img src="../assets/Deck.png" alt="middle card">
-            <img src="../assets/Deck.png" alt="middle card">
-            <img src="../assets/Deck.png" alt="middle card">
-            <img src="../assets/Deck.png" alt="middle card">
-            <img src="../assets/Deck.png" alt="middle card">
-            <img src="../assets/Deck.png" alt="middle card">
+            <!-- Middle Card -->
+            <!-- 1 random card -->
+            <div class="middle-card">
+                <img class="middle-card-image" src="../assets/Wild.png" alt="middle card">
             </div>
-    
+
+            <!-- Uno button -->
+            <button type="button" class="btn btn-danger">Uno</button>
+
+            <!-- Leave Game button -->
+            <!-- <button type="button" class="btn btn-warning">Leave Game</button> -->
+        </div>
+
+        <div class="enemies">
+            <!-- Player 2 Deck -->
+            <!-- 7 random cards -->
+            <div class="player2Deck">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+            </div>
+
+            <div class="player2">
+                <!-- Player 2 -->
+                <h2>Player 2</h2>
+            </div>
+            
+
+            <!-- Player 3 Deck -->
+            <!-- 7 random cards -->
+            <div class="player2Deck">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+            </div>
+        
             <div class="player2">
                 <!-- Player 2 -->
                 <h2>Player 3</h2>
-                        </div>
+            </div>
 
-        <!-- Player 4 Deck -->
-        <!-- 7 random cards -->
-        <div class="player2Deck">
-            <img src="../assets/Deck.png" alt="middle card">
-            <img src="../assets/Deck.png" alt="middle card">
-            <img src="../assets/Deck.png" alt="middle card">
-            <img src="../assets/Deck.png" alt="middle card">
-            <img src="../assets/Deck.png" alt="middle card">
-            <img src="../assets/Deck.png" alt="middle card">
-            <img src="../assets/Deck.png" alt="middle card">
-        </div>
-    
+            <!-- Player 4 Deck -->
+            <!-- 7 random cards -->
+            <div class="player2Deck">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+                <img src="../assets/Deck.png" alt="middle card">
+            </div>
             <div class="player2">
                 <!-- Player 2 -->
                 <h2>Player 4</h2>
-                        </div>
-
+            </div>
         </div>
 
-
-
-        <!--TO IMPLEMENT GAME LINK TO BACKEND-->
-        <button class="open-chat" onclick>Chat</button>
-        <!--TO IMPLEMENT FULL CHAT WINDOW OPTION-->
-        <div class="messages">
-            <!-- For each message in chat, display here -->
-
-        </div>
+        <!-- For each message in chat, display here -->
+        <!-- <div class="messages"></div>
         <div class="chat" id="form">
             <form class="form" action="/comments/create" method="POST" enctype="application/x-www-form-urlencoded">
                 <h1>Chat</h1>
@@ -141,10 +135,13 @@
                 <textarea placeholder="Type message" name="comment"></textarea>
 
                 <button type="submit" class="btn">Send</button>
-                <button type="button" class="cancel">Close</button>
+                <button type="button" class="cancel">Cancel</button>
             </form>
-        </div>
+        </div> -->
+
     </div>
+</body>
 
+<script src="/js/game.js" charset="utf-8"></script>
 
-    <%- include("footer") -%>
+<%- include("footer") -%>

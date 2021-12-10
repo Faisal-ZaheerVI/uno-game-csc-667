@@ -1,78 +1,42 @@
-// function showAlert() {
-//     var myText = "This can be whatever text you like!";
-//     alert (myText);
-//   }
-
-
-
-
-
-// function random() {
-
-
-//     var x = Math.floor(Math.random() * 9) + 0;
-
-//     $(".middle-card-image").attr("src", "assets" + "/Blue_" + x + ".png");
-    
-// }
-
-function cardToCenter() {
-
-  var source = $(".firstCard").attr("src");
- 
-
-  $(".middle-card-image").attr("src", source);
-    
+function fetchUser(user) {
+    return fetch(`/users/${user.user_id}`, { method: 'get' })
+    .then((response) => response.json())
+    .then((results) => {
+        // User returned is an object with fields (id, username, ...)
+        return results.username;
+    })
+    .catch(console.log);
 }
 
-function cardToCenter2() {
-
-  var source = $(".secondCard").attr("src");
- 
-
-  $(".middle-card-image").attr("src", source);
-    
+function createGameUsersListing(user) {
+    // Each user is an Object with fields (user_id, game_id, current_player, and order)
+    return `<p>${user}</p>`;
 }
 
-function cardToCenter3() {
+window.addEventListener('DOMContentLoaded', (event) => {
+    let usersListing = document.getElementById('current-players');
+    let username = '';
+    fetch(`/games/${5}/users`, { method: 'get' })
+    .then((response) => response.json())
+    .then((results) => {
+        let newUsersListing = '';
+        for(var i = 0; i < results.length; i++) {
+            // Creates HTML template and fills data for each active game listing.
+            fetchUser(results[i])
+            .then((response) => {
+                console.log(response);
+                return response;
+            })
 
-  var source = $(".thirdCard").attr("src");
- 
+            newUsersListing += createGameUsersListing(username);
+        }
 
-  $(".middle-card-image").attr("src", source);
-    
-}
-function cardToCenter4() {
+        usersListing.innerHTML = newUsersListing;
 
-  var source = $(".fourthCard").attr("src");
- 
+        return results;
+    })
+    .catch(console.log);
+});
 
-  $(".middle-card-image").attr("src", source);
-    
-}
-function cardToCenter5() {
-
-  var source = $(".fifthCard").attr("src");
- 
-
-  $(".middle-card-image").attr("src", source);
-    
-}
-function cardToCenter6() {
-
-  var source = $(".sixthCard").attr("src");
- 
-
-  $(".middle-card-image").attr("src", source);
-    
-}
-function cardToCenter7() {
-
-  var source = $(".seventhCard").attr("src");
- 
-
-  $(".middle-card-image").attr("src", source);
-    
-}
-
+/* FRONT-END GAME LOGIC */
 

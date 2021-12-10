@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-
 const bcrypt = require('bcrypt');
 const passport = require('passport');
+const Users = require('../db/users');
 
 const initializePassport = require('../config/passport');
 initializePassport(passport);
@@ -91,6 +91,17 @@ router.get('/logout', function(req, res, next) {
   req.logout();
   req.flash('success', 'You have been logged out');
   res.redirect('/login');
+});
+
+// Get user details by user_id
+router.get('/:id', function(req, res) {
+  const { id } = req.params;
+
+  Users.findUserById(id)
+  .then((results) => {
+    return results;
+  })
+  .catch(console.log);
 });
 
 module.exports = router;
