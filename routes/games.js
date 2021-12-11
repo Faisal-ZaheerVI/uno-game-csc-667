@@ -65,8 +65,20 @@ router.get("/:id/users", (req, res) => {
 });
 
 /* PLAYS A CARD IN GAME #(:id) */
-router.post("/:id/play", (req, res, next) => {
+router.post("/:id/play/:card", (req, res, next) => {
+    // VALIDATION:
+    // Make sure user is in the game
+    // Make sure the user holds this card
+    // Make sure it's the user's turn
 
+    // If true, update the gameState
+    // Then broadcast gameState to all users
+
+    // If invalid, just update gameState
+
+    const { id, card } = req.params; // Game_id
+    console.log(id);
+    console.log(card);
 });
 
 /* DRAWS A CARD IN GAME #(:id) */

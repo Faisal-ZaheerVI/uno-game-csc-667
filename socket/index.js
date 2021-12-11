@@ -25,9 +25,9 @@ const init = ( app, server ) => {
       io.emit('message', msg);
     });
 
-    socket.on('getuser', (username) => {
-      io.emit('getuser', username);
-    })
+    socket.on('gameState', (gameData) => {
+      io.emit('gameState', gameData);
+    });
 
   });
 };

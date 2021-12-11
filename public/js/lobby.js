@@ -61,17 +61,17 @@ window.addEventListener('DOMContentLoaded', (event) => {
     .catch(console.log);
 });
 
-// Create a game by clicking element with id="create"
-document.querySelector('#create').addEventListener('click', event => {
-    event.preventDefault();
+// Create a game by clicking element with id="create" - UNCOMMENT?
+// document.querySelector('#create').addEventListener('click', event => {
+//     event.preventDefault();
     
-    fetch(`/games/create`, { method: 'post' })
-    .then((response) => response.json())
-    .then(({ id }) => {
-        window.location.replace(`/games/${id}`);
-    })
-    .catch(console.log);
-});
+//     fetch(`/games/create`, { method: 'post' })
+//     .then((response) => response.json())
+//     .then(({ id }) => {
+//         window.location.replace(`/games/${id}`);
+//     })
+//     .catch(console.log);
+// });
 
 // Join a game by clicking element with id="game-listing"
 // document.querySelector('.game-listing-test').addEventListener('click', event => {

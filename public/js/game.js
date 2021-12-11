@@ -21,21 +21,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     fetch(`/games/${1}/users`, { method: 'get' })
     .then((response) => response.json())
     .then((results) => {
-        let newUsersListing = '';
-        for(var i = 0; i < results.length; i++) {
-            // Creates HTML template and fills data for each active game listing.
-            fetchUser(results[i])
-            .then((response) => {
-                console.log(response);
-                return response;
-            })
-
-            newUsersListing += createGameUsersListing(username);
-        }
-
-        usersListing.innerHTML = newUsersListing;
-
-        return results;
+        console.log(results);
     })
     .catch(console.log);
 });
@@ -82,6 +68,30 @@ function outputMessage(message, username) {
     chatMsgs.scrollTop = chatMsgs.scrollHeight;
 }
 
-// GAME INTERACTIONS JAVASCRIPT (FRONT-END)
+/* GAME INTERACTIONS JAVASCRIPT (FRONT-END) */
 
+// Playing a Card:
+const myDeck = document.getElementById('mydeck')
+myDeck.addEventListener('click', event => {
+    event.preventDefault();
 
+    // Need game_id and card_id
+
+    // Getting card_id
+    const { id } = event.target.dataset;
+
+    // REMOVE CARD FROM DOM CODE:
+    // const card = document.getElementById(`card-${id}`);
+    // myDeck.removeChild(card);
+
+    console.log("Clicked on card #", id);
+    fetch(`/games/1/play/${id}`, {method: 'POST'})
+    .then()
+    .catch(console.log);
+
+});
+
+// Example updating gameState for game 17
+// socket.on(`gameState: 17`, gameData => {
+//     console.log(gameData);
+// });
