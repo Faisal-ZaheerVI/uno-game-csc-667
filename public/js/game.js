@@ -141,3 +141,7 @@ function createGameState(userId, gameId) {
         winner: 0 // Order # of user that has won (if 0, game will continue running)
     }
 }
+
+function updateGameState(gameState) {
+    
+}

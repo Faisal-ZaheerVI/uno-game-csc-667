@@ -22,15 +22,6 @@ router.get('/rules', function(req, res, next) {
 
 router.get('/lobby', ensureAuthenticated, function(req, res, next) {
 
-  // Games.listGames()
-  // .then((results) => {    
-  //   res.render('lobby', {
-  //     name: req.user.username,
-  //     games: results
-  //   });
-  // })
-  // .catch(console.log);
-
   Games.listGames()
   .then((results) => res.json(results))
   .catch(console.log);

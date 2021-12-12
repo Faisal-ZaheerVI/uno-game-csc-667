@@ -59,6 +59,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
         return results;
     })
     .catch(console.log);
+
+    // gamesListing.scrollTop = gamesListing.scrollHeight;
 });
 
 // Create a game by clicking element with id="create" - UNCOMMENT?

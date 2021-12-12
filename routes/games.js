@@ -1,17 +1,32 @@
 const express = require('express');
-const { route } = require('.');
 const router = express.Router();
 const Games = require('../db/games');
 const Users = require('../db/users');
+const { ensureAuthenticated } = require('../config/auth');
 
 /* GAME BY URL (only for users part of the game) */
-router.get("/:id", function (req, res, next) {
-    // Pass authentication function if user trying to go to game link is
-    // currently part of the game??
+router.get("/:id", ensureAuthenticated, function (req, res, next) {
 
     const { id } = req.params; // Game_id
 
-    res.render('game', { id });
+    Games.userListByGame(id)
+    // .then((response) => response.json())
+    .then((results) => {
+        let inGame = false;
+        for(let i = 0; i < results.length; i++) {
+            if(results[i].user_id == req.user.id) {
+                inGame = true;
+            }
+        }
+        if(inGame) {
+            res.render('game', { id });
+        } else {
+            res.render('lobby', {
+                name: req.user.username
+            });
+        }
+    })
+    .catch(console.log);
 });
 
 /* CREATE GAME */

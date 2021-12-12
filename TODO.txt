@@ -6,7 +6,7 @@ Create Games:
     (Currently goes to /games/create literal link instead of /game/:id)
 
 Join Games: 
-    - Check to see if user_id that joined is already part of the game_id 
+    - (DONE?) Check to see if user_id that joined is already part of the game_id 
     (don't want i.e. game_id = 1 having two players identified as user_id = 5, want 4 unique user_id players)
 
 Chat:
