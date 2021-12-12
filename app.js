@@ -54,15 +54,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use((req, res, next) => {
-//   console.log(req.session);
-//   if(req.session.username) {
-//     // If sessions is initialized, aka if logged in
-//     res.locals.logged = true;
-//   }
-//   next();
-// });
-
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/comments', commentsRouter);

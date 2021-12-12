@@ -5,7 +5,7 @@ var format = require('pg-format'); // To SQL insert nested array of array values
 const MAX_PLAYERS = 4;
 
 // SQL statement presets:
-const CREATE_GAME = 'INSERT INTO games (direction, user_id, title, created) VALUES (0, $1, $2, $3) RETURNING id';
+const CREATE_GAME = 'INSERT INTO games (direction, user_id, title, created) VALUES (1, $1, $2, $3) RETURNING id';
 const INSERT_CARD_QUERY = 'INSERT INTO game_cards (card_id, game_id, user_id, "order", discarded, draw_pile) VALUES (${card_id}, ${game_id}, ${user_id}, ${order}, 0, 1)';
 const INSERT_USER_INTO_GAME = 'INSERT INTO game_players (game_id, user_id, current_player, "order") VALUES (${game_id}, ${user_id}, ${current_player}, ${order}) RETURNING game_id AS id';
 const LIST_OF_GAMES = 'SELECT * FROM games';
@@ -91,12 +91,12 @@ const shuffle = (cards, game_id, user_id) => {
     let cardsArray = []; // Nested arrays of values to insert in one format SQL query
     // FIELDS: card_id, game_id, user_id, "order", discarded, draw_pile
     // Cards.length = 108?
-    for(i = cards.length - 1; i > 0; i--) {
+    for(i = cards.length - 1; i >= 0; i--) {
         j = Math.floor(Math.random() * (i + 1));
         x = cards[i];
         cards[i] = cards[j];
         cards[j] = x;
-        if (i < 8) {
+        if (i < 7) {
             // Set last 7 shuffled cards to Player 1's hand
             cardsArray.push([cards[i].id, game_id, user_id, i, 0, 0]);
         } else {
@@ -136,10 +136,18 @@ const newPlayer = (user_id, game_id, count) =>
         })
         .then(([{ id }]) => ({ id }));
 
+const getGameState = (gameId) => {
+    const players = 'SELECT * FROM game_players WHERE game_id=$1';
+    const cards = 'SELECT * FROM game_cards WHERE game_id=$1';
+    const direction = 'SELECT direction FROM games WHERE id=$1';
+    return Promise.all([db.any(players, gameId), db.any(cards, gameId), db.one(direction, gameId)]);
+}
+
 module.exports = {
     create, 
     join, 
     userCount,
     listGames,
-    userListByGame
+    userListByGame,
+    getGameState
 }

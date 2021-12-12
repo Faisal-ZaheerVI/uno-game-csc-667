@@ -3,6 +3,7 @@ const router = express.Router();
 const Games = require('../db/games');
 const Users = require('../db/users');
 const { ensureAuthenticated } = require('../config/auth');
+const { result } = require('../db');
 
 /* GAME BY URL (only for users part of the game) */
 router.get("/:id", ensureAuthenticated, function (req, res, next) {
@@ -72,12 +73,17 @@ router.get("/:id/users", (req, res) => {
     const { id } = req.params;
 
     Games.userListByGame(id)
-    .then((results) => {
-        return results;
-    })
     .then((results) => res.json(results))
     .catch(console.log);
 });
+
+router.get("/:id/gamestate", (req, res) => {
+    const { id } = req.params;
+
+    Games.getGameState(id)
+    .then((results) => res.json(results))
+    .catch(console.log);
+})
 
 /* PLAYS A CARD IN GAME #(:id) */
 router.post("/:id/play/:card", (req, res, next) => {
