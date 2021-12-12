@@ -309,8 +309,9 @@ function updateGamePage(gameState) {
     removeAllChildNodes(myDeck);
     for(let i = 0; i < gameState.users[0].cards.length; i++) {
         let card = document.createElement('div');
-        card.setAttribute("id", `card-${gameState.users[0].cards[i]}`);
-        card.innerHTML = `<img class="firstCard" src="../assets/Green_0.png" data-id="${gameState.users[0].cards[i]}">`
+        let cardId = gameState.users[0].cards[i];
+        card.setAttribute("id", `card-${cardId}`);
+        card.innerHTML = `<img src="../assets/card_${cardId}.png" data-id="${cardId}">`
         myDeck.appendChild(card);
     }
 }
