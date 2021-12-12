@@ -1,29 +1,19 @@
-Migrations:
-    - Create separate migrations for each table!!!
-
-Create Games:
-    - (Optional) Fix link redirect when user creates new game? 
-    (Currently goes to /games/create literal link instead of /game/:id)
-
-Join Games: 
-    - (DONE?) Check to see if user_id that joined is already part of the game_id 
-    (don't want i.e. game_id = 1 having two players identified as user_id = 5, want 4 unique user_id players)
-
-Chat:
-    - Implement Socket Chat (IN PROGRESS)
-    - Lobby Page Chat:
-        - Fix error that shows any sent message as being from you (current logged in user)
-        even if someone else connected to server sent the message.
-        - Stylize and Fix Lobby Chat + Chatbox with CSS (design, formatting, etc.)
-        - (Optional) Replace Date Object with Moment.js?
-        - (DONE) Assign User's username to chat message name
-    - Game Page Chat:
-        - Find place on Game page for Chat + Chatbox
-        - Use similar code from Lobby Chat
-
 Game:
-    - Start implementing game logic
-    - Implement interactions (Socket?)
+    - (DONE) Modify player1 deck code so it's relative to the logged on user
+    - Implement interactions in Game
+        - User plays a card
+            - Is the user in the game? Do they own the card? Is it their turn?
+            - If reverse is played, change direction to -1, iterate through player's turns backwards
+                - Implement iterating through players turn based on direction (1 or -1)
+            - If +2 or +4 is played -> Give next player +2 or +4 cards
+                - Next player who gets card based on direction! (1 or -1)
+            - If Wild or +4 played -> Somehow prompt to choose a color?
+                - Javascript alert input prompt to get color?
+        - User draws a card (draw only one card?)
+            - Is it their turn?
+    - Implement win condition
+    ... Any more???
 
 Heroku:
     - Figure out Heroku postinstall issues, and whatever other issues!
+    - Fix Heroku database issues or something

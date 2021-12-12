@@ -307,11 +307,27 @@ function removeAllChildNodes(parent) {
 function updateGamePage(gameState) {
     const myDeck = document.getElementById('mydeck');
     removeAllChildNodes(myDeck);
-    for(let i = 0; i < gameState.users[0].cards.length; i++) {
-        let card = document.createElement('div');
-        let cardId = gameState.users[0].cards[i];
-        card.setAttribute("id", `card-${cardId}`);
-        card.innerHTML = `<img src="../assets/card_${cardId}.png" data-id="${cardId}">`
-        myDeck.appendChild(card);
-    }
+
+    fetch('/user', { method: 'get' })
+    .then((response) => response.json())
+    .then((user) => {
+        // Returns user object with fields user.id and user.username
+        let playerIndex;
+
+        for(let i = 0; i < gameState.users.length; i++) {
+            if(gameState.users[i].user_id == user.id) {
+                playerIndex = i;
+            }
+        }
+
+
+        for(let i = 0; i < gameState.users[playerIndex].cards.length; i++) {
+            let card = document.createElement('div');
+            let cardId = gameState.users[playerIndex].cards[i];
+            card.setAttribute("id", `card-${cardId}`);
+            card.innerHTML = `<img src="../assets/card_${cardId}.png" data-id="${cardId}">`
+            myDeck.appendChild(card);
+        }
+    })
+    .catch(console.log);
 }
