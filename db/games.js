@@ -158,6 +158,31 @@ const getUserFromGame = (gameId, userId) => {
     return db.one(SELECT_USER_FROM_GAME, [gameId, userId]);
 }
 
+const getGameDiscardCards = (gameId) => {
+    const GET_DISCARD_CARDS = 'SELECT * FROM game_cards WHERE game_id=$1 AND discarded=1';
+    return db.any(GET_DISCARD_CARDS, [gameId]);
+}
+
+const playValidCard = (cardId, gameId, userOrder) => {
+    const PLAY_CARD = 'UPDATE game_cards SET discarded=1 WHERE card_id=$1 AND game_id=$2 RETURNING game_id AS id';
+    const REMOVE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=0 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id';
+    const UPDATE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=1 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id';
+
+    // Change logic for reverse cards? Skip? +2?
+    let nextPlayerOrder = userOrder;
+    if(userOrder == 4) {
+        nextPlayerOrder = 1;
+    } else {
+        nextPlayerOrder++;
+    }
+
+    return Promise.all([
+        db.one(PLAY_CARD, [cardId, gameId]),
+        db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
+        db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextPlayerOrder})
+    ]);
+}
+
 module.exports = {
     create, 
     join, 
@@ -166,5 +191,7 @@ module.exports = {
     userListByGame,
     getGameState,
     getCardFromGame,
-    getUserFromGame
+    getUserFromGame,
+    getGameDiscardCards,
+    playValidCard
 }

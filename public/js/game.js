@@ -1,7 +1,7 @@
 const socket = io();
 
 socket.on('updateGameState', gameState => {
-    // console.log("Gamestate=", gameState);
+    console.log("Gamestate=", gameState);
     updateGamePage(gameState);
     // getGameData(gameState.game_id);
 });
@@ -18,7 +18,7 @@ function getGameData(gameId) {
     fetch(`/games/${gameId}/gamestate`, { method:'get' })
     .then((response) => response.json())
     .then((gameData) => {
-        createGameState(gameData);
+        createGameState(gameData, null);
     })
     .catch(console.log);
 }
@@ -37,7 +37,7 @@ fields: card_id, user_id, game_id, order, discarded, draw_pile
 */
 
 // Creates initial gameState object and passes to updateGamePage:
-function createGameState(gameData) {
+function createGameState(gameData, discardCard) {
     let gameState = {
         // Current game's id
         game_id: 0,
@@ -81,6 +81,7 @@ function createGameState(gameData) {
             drawpileCards.push(game_cards[i].card_id);
         }
         if(game_cards[i].discarded == 1) {
+            console.log(game_cards[i].card_id);
             discardedCards.push(game_cards[i].card_id);
         }
         else {
@@ -110,6 +111,8 @@ function createGameState(gameData) {
             }
         }
     }
+
+    console.log("Discarded array=", discardedCards);
 
     if(player1Cards.length < 1 && player1active) {
         winner = player1.order;
@@ -256,7 +259,8 @@ function updateGamePage(gameState) {
         // Update discarded card on front-end?
         let discardPile = document.getElementById('discarded');
         removeAllChildNodes(discardPile);
-        let discardCardId = gameState.discard[0]; // Check how discard array works?
+        let currentDiscard = gameState.discard.length - 1;
+        let discardCardId = gameState.discard[currentDiscard]; // Check how discard array works?
         let discardHTML = `<img class="middle-card-image" src="../assets/card_${discardCardId}.png" alt="Top of discard">`;
         discardPile.innerHTML = discardHTML;
 
@@ -328,6 +332,7 @@ myDeck.addEventListener('click', event => {
 function playCard(gameId, cardId) {
     fetch(`/games/${gameId}/play/${cardId}`, {method: 'POST'})
     .then((response) => response.json())
+    // .then((gameData) => console.log(gameData))
     .then((gameData) => createGameState(gameData))
     .catch(console.log);
 }
