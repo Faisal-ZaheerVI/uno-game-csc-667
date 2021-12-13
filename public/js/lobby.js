@@ -72,6 +72,7 @@ chatForm.addEventListener('submit', (event) => {
 
     // Get message text by id
     const msg = event.target.elements.lobbymsg.value;
+    // Get's username from the DOM:
     let userDiv = document.getElementById('welcome-user');
     let username = userDiv.childNodes[1].textContent.split(' ')[1];
     let msgContent = [msg, username];

@@ -269,15 +269,8 @@ function uno() {
 }
 
 // GAME CHAT JAVASCRIPT:
-socket.on('message', message => {
-    fetch('/user', { method: 'get' })
-    .then((response) => response.json())
-    .then((user) => {
-        // Returns user object with fields user.id and user.username
-        console.log(message);
-        outputMessage(message, user.username);
-    })
-    .catch(console.log);
+socket.on('message', msgContent => {
+    outputMessage(msgContent);
 });
 
 const chatForm = document.getElementById('game-chat-form');
@@ -286,13 +279,19 @@ chatForm.addEventListener('submit', (event) => {
 
     // Get message text by id
     const msg = event.target.elements.gamemsg.value;
+    // Get's username from the DOM:
+    let userDiv = document.getElementById('welcome-game-user');
+    let username = userDiv.childNodes[1].textContent.split(' ')[1];
+    let msgContent = [msg, username];
 
     // Emitting a message to the server
-    socket.emit('chatMessage', msg);
+    socket.emit('chatMessage', msgContent);
 });
 
 // Output message to DOM
-function outputMessage(message, username) {
+function outputMessage(msgContent) {
+    let message = msgContent[0];
+    let username = msgContent[1];
     // Creates div element for each message to add to chat-messages container.
     const div = document.createElement('div');
     div.classList.add('message');
