@@ -117,7 +117,7 @@ const newPlayer = (user_id, game_id, count) =>
             let newCards = [];
             let count = 0;
             for (var i = 0; i < cards.length; i++) {
-                if(cards[i].draw_pile == 1 && count < 8) {
+                if(cards[i].draw_pile == 1 && count < 7) {
                     cards[i].user_id = user_id;
                     newCards.push({
                         user_id: cards[i].user_id, 

@@ -22,6 +22,7 @@ router.get("/:id", ensureAuthenticated, function (req, res, next) {
         if(inGame) {
             res.render('game', { id });
         } else {
+            res.redirect('../lobby');
             res.render('lobby', {
                 name: req.user.username
             });
@@ -41,6 +42,7 @@ router.post("/create", (req, res) => {
     })
     // .then(({ id }) => res.json({ id }))
     .then(({id}) => {
+        res.redirect(`/games/${id}`);
         res.render('game', { id });
     })
     .catch(console.log);

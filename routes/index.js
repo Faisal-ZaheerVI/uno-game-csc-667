@@ -13,7 +13,16 @@ router.get('/registration', function(req, res, next) {
 });
 
 router.get('/login', function(req, res, next) {
-  res.render('login');
+  // If user is already logged in, redirects to lobby page.
+  if(req.isAuthenticated()) {
+    res.redirect('/lobby');
+    res.render('lobby', {
+      name: req.user.username
+    });
+  } 
+  else {
+    res.render('login');
+  }
 });
 
 router.get('/rules', function(req, res, next) {
