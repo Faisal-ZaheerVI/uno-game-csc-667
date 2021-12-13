@@ -3,19 +3,6 @@
 //     alert (myText);
 //   }
 
-
-
-
-
-// function random() {
-
-
-//     var x = Math.floor(Math.random() * 9) + 0;
-
-//     $(".middle-card-image").attr("src", "assets" + "/Blue_" + x + ".png");
-    
-// }
-
 function cardToCenter() {
 
   var source = $(".firstCard").attr("src");

@@ -98,10 +98,10 @@ const shuffle = (cards, game_id, user_id) => {
         cards[j] = x;
         if (i < 7) {
             // Set last 7 shuffled cards to Player 1's hand
-            cardsArray.push([cards[i].id, game_id, user_id, i, 0, 0]);
+            cardsArray.push([cards[i].id, game_id, user_id, i+1, 0, 0]);
         } else {
             // Set to Draw Pile (sets default to user_id bc can't currently set user_id = 0 aka violates foreign key)
-            cardsArray.push([cards[i].id, game_id, user_id, i, 0, 1]);
+            cardsArray.push([cards[i].id, game_id, user_id, i+1, 0, 1]);
         }
     }
     return cardsArray;
@@ -143,11 +143,27 @@ const getGameState = (gameId) => {
     return Promise.all([db.any(players, gameId), db.any(cards, gameId), db.one(direction, gameId)]);
 }
 
+const getCardFromGame = (gameId, cardId) => {
+    // console.log("Checking if user_id", userId, "holds card_id", cardId);
+    return db.one('SELECT * FROM game_cards WHERE game_id=$1 AND card_id=$2', [gameId, cardId]);
+}
+
+const getUserFromGame = (gameId, userId) => {
+    const SELECT_USER_FROM_GAME = 'SELECT * FROM game_players WHERE game_id=$1 AND user_id=$2';
+    return db.one(SELECT_USER_FROM_GAME, [gameId, userId]);
+}
+
+const validatePlayCard = (userId, gameId, cardId) => {
+
+}
+
 module.exports = {
     create, 
     join, 
     userCount,
     listGames,
     userListByGame,
-    getGameState
+    getGameState,
+    getCardFromGame,
+    getUserFromGame
 }

@@ -89,19 +89,66 @@ router.get("/:id/gamestate", (req, res) => {
 
 /* PLAYS A CARD IN GAME #(:id) */
 router.post("/:id/play/:card", (req, res, next) => {
-    // VALIDATION:
-    // Make sure user is in the game
-    // Make sure the user holds this card
-    // Make sure it's the user's turn
+    const { id, card } = req.params; // Game_id = id, card_id = card
+    let userId = req.user.id; // Activer user's id
+    console.log(req.user.username, "played card #", card, "in game #", id);
+    // PLAY CARD VALIDATION:
+    Promise.all([Games.userListByGame(id), Games.getCardFromGame(id, card), Games.getUserFromGame(id, userId)])
+    .then(([users, gameCard, gameUser]) => {
+        for(let i = 0; i < users.length; i++) {
+            // Make sure user is in the game
+            if(users[i].user_id == userId) {
+                // User is in the game.
+                // Make sure the user holds this card:
+                if(gameCard.user_id == userId && gameCard.discarded == 0 
+                    && gameCard.draw_pile == 0) {
+                        // User does hold the card.
+                        // Make sure it's the user's turn:
+                        if(gameUser.current_player) {
+                            // It is the user's turn.
+                            console.log("It is the player's turn!");
+                            // Can the card be played? (i.e. cant play Red 1 on Blue 2)
+                        }
+                }
+            }
+        }
+
+    })
+    // Games.userListByGame(id)
+    // .then((users) => {
+    //     let userId = req.user.id;
+    //     let userInGame = false;
+    //     for(let i = 0; i < users.length; i++) {
+    //         if(users[i].user_id == userId) {
+    //             userInGame = true;
+    //         }
+    //     }
+    //     if(userInGame) {
+    //         Games.getCardFromGame(id, card)
+    //         .then((result) => {
+    //             if(result.user_id == userId && result.discarded == 0 
+    //                 && result.draw_pile == 0) {
+    //                 console.log("User has the card!");
+    //             }
+    //             else {
+    //                 console.log("User doesn't have the card");
+    //             }
+    //         });
+    //     }
+    //     else {
+            
+    //     }
+    // })
+    .catch(console.log);
+
+    Games.getGameState(id)
+    .then((results) => res.json(results))
+    .catch(console.log);
 
     // If true, update the gameState
     // Then broadcast gameState to all users
 
     // If invalid, just update gameState
-
-    const { id, card } = req.params; // Game_id
-    console.log(id);
-    console.log(card);
 });
 
 /* DRAWS A CARD IN GAME #(:id) */
