@@ -18,10 +18,6 @@ function getGameData(gameId) {
     fetch(`/games/${gameId}/gamestate`, { method:'get' })
     .then((response) => response.json())
     .then((gameData) => {
-        // if(gameData[0].length == 4) {
-        //     // players = gameData[0].length;
-        //     createGameState(myId, gameData);
-        // }
         createGameState(gameData);
     })
     .catch(console.log);
@@ -84,31 +80,31 @@ function createGameState(gameData) {
         if(game_cards[i].draw_pile == 1) {
             drawpileCards.push(game_cards[i].card_id);
         }
-        else if(game_cards[i].discard == 1) {
+        if(game_cards[i].discarded == 1) {
             discardedCards.push(game_cards[i].card_id);
         }
         else {
             if(player1active) {
                 if(game_cards[i].user_id == player1.user_id &&
-                    game_cards[i].draw_pile == 0) {
+                    game_cards[i].draw_pile == 0 && game_cards[i].discarded == 0) {
                         player1Cards.push(game_cards[i].card_id);
                 }
             }
             if(player2active) {
                 if(game_cards[i].user_id == player2.user_id &&
-                    game_cards[i].draw_pile == 0) {
+                    game_cards[i].draw_pile == 0 && game_cards[i].discarded == 0) {
                         player2Cards.push(game_cards[i].card_id);
                 }
             }
             if(player3active) {
                 if(game_cards[i].user_id == player3.user_id &&
-                    game_cards[i].draw_pile == 0) {
+                    game_cards[i].draw_pile == 0 && game_cards[i].discarded == 0) {
                         player3Cards.push(game_cards[i].card_id);
                     }
             }
             if(player4active) {
                 if(game_cards[i].user_id == player4.user_id &&
-                    game_cards[i].draw_pile == 0) {
+                    game_cards[i].draw_pile == 0 && game_cards[i].discarded == 0) {
                         player4Cards.push(game_cards[i].card_id);
                     }
             }
@@ -202,19 +198,12 @@ function updateGamePage(gameState) {
     // Returns user object with fields user.id and user.username
     .then((user) => {
         let currentUser;
-
-        // console.log("gameState users is=", gameState.users);
-
         for(let i = 0; i < gameState.users.length; i++) {
             if(gameState.users[i].user_id == user.id) {
-                // console.log("Active userid =",user.id);
-                // console.log(gameState.users[i]);
                 currentUser = gameState.users[i];
             }
         }
-        // console.log("Current user var is=",currentUser);
         let currentUserOrder = currentUser.order;
-        // let orderIndex = currentUserOrder + 1;
         let orderArr = [1,2,3,4]; // 3,4,1,2
         while(orderArr[0] != currentUserOrder) {
             let value = orderArr.shift();
@@ -265,6 +254,12 @@ function updateGamePage(gameState) {
         }
 
         // Update discarded card on front-end?
+        let discardPile = document.getElementById('discarded');
+        removeAllChildNodes(discardPile);
+        let discardCardId = gameState.discard[0]; // Check how discard array works?
+        let discardHTML = `<img class="middle-card-image" src="../assets/card_${discardCardId}.png" alt="Top of discard">`;
+        discardPile.innerHTML = discardHTML;
+
     })
     .catch(console.log);
 }

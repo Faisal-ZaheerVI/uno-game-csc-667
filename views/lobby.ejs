@@ -27,8 +27,10 @@
                   <li><%= messages.error %></li>
                 <% } %>
             </ul>
-    
-            <h1>Welcome <%= name %></h1>
+            
+            <div id="welcome-user">
+                <h1>Welcome <%= name %></h1>
+            </div>
     
             <ul>
                 <% if(typeof errors != 'undefined') { %> <% errors.forEach(error => { %>

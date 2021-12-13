@@ -95,24 +95,26 @@ router.post("/:id/play/:card", (req, res, next) => {
     // PLAY CARD VALIDATION:
     Promise.all([Games.userListByGame(id), Games.getCardFromGame(id, card), Games.getUserFromGame(id, userId)])
     .then(([users, gameCard, gameUser]) => {
-        for(let i = 0; i < users.length; i++) {
-            // Make sure user is in the game
-            if(users[i].user_id == userId) {
-                // User is in the game.
-                // Make sure the user holds this card:
-                if(gameCard.user_id == userId && gameCard.discarded == 0 
-                    && gameCard.draw_pile == 0) {
-                        // User does hold the card.
-                        // Make sure it's the user's turn:
-                        if(gameUser.current_player) {
-                            // It is the user's turn.
-                            console.log("It is the player's turn!");
-                            // Can the card be played? (i.e. cant play Red 1 on Blue 2)
-                        }
+        // Make sure there are 4 players who joined the game before doing any interactions.
+        if(users.length == 4) {
+            for(let i = 0; i < users.length; i++) {
+                // Make sure user is in the game
+                if(users[i].user_id == userId) {
+                    // User is in the game.
+                    // Make sure the user holds this card:
+                    if(gameCard.user_id == userId && gameCard.discarded == 0 
+                        && gameCard.draw_pile == 0) {
+                            // User does hold the card.
+                            // Make sure it's the user's turn:
+                            if(gameUser.current_player) {
+                                // It is the user's turn.
+                                console.log("It is the player's turn!");
+                                // Can the card be played? (i.e. cant play Red 1 on Blue 2)
+                            }
+                    }
                 }
             }
         }
-
     })
     // Games.userListByGame(id)
     // .then((users) => {

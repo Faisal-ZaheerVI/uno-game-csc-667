@@ -99,7 +99,12 @@ const shuffle = (cards, game_id, user_id) => {
         if (i < 7) {
             // Set last 7 shuffled cards to Player 1's hand
             cardsArray.push([cards[i].id, game_id, user_id, i+1, 0, 0]);
-        } else {
+        } 
+        else if(i == 7) {
+            // Init one card for discard pile on game start.
+            cardsArray.push([cards[i].id, game_id, user_id, i+1, 1, 0]);
+        }
+        else {
             // Set to Draw Pile (sets default to user_id bc can't currently set user_id = 0 aka violates foreign key)
             cardsArray.push([cards[i].id, game_id, user_id, i+1, 0, 1]);
         }
@@ -117,7 +122,7 @@ const newPlayer = (user_id, game_id, count) =>
             let newCards = [];
             let count = 0;
             for (var i = 0; i < cards.length; i++) {
-                if(cards[i].draw_pile == 1 && count < 7) {
+                if(cards[i].draw_pile == 1 && cards[i].discarded == 0 && count < 7) {
                     cards[i].user_id = user_id;
                     newCards.push({
                         user_id: cards[i].user_id, 
@@ -151,10 +156,6 @@ const getCardFromGame = (gameId, cardId) => {
 const getUserFromGame = (gameId, userId) => {
     const SELECT_USER_FROM_GAME = 'SELECT * FROM game_players WHERE game_id=$1 AND user_id=$2';
     return db.one(SELECT_USER_FROM_GAME, [gameId, userId]);
-}
-
-const validatePlayCard = (userId, gameId, cardId) => {
-
 }
 
 module.exports = {

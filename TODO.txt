@@ -1,8 +1,9 @@
 Game:
-    - (DONE) Modify player1 deck code so it's relative to the logged on user
     - Implement interactions in Game
         - User plays a card
-            - Is the user in the game? Do they own the card? Is it their turn?
+            - (DONE) Is the user in the game? Do they own the card? Is it their turn?
+            - Modify card to discard, current_player = 0, move current_player = 1 to
+            next player by order # (if order = 4, go back to order = 1)
             - If reverse is played, change direction to -1, iterate through player's turns backwards
                 - Implement iterating through players turn based on direction (1 or -1)
             - If +2 or +4 is played -> Give next player +2 or +4 cards

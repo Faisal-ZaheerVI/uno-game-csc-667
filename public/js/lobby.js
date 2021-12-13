@@ -59,51 +59,11 @@ window.addEventListener('DOMContentLoaded', (event) => {
         return results;
     })
     .catch(console.log);
-
-    // gamesListing.scrollTop = gamesListing.scrollHeight;
 });
 
-// Create a game by clicking element with id="create" - UNCOMMENT?
-// document.querySelector('#create').addEventListener('click', event => {
-//     event.preventDefault();
-    
-//     fetch(`/games/create`, { method: 'post' })
-//     .then((response) => response.json())
-//     .then(({ id }) => {
-//         window.location.replace(`/games/${id}`);
-//     })
-//     .catch(console.log);
-// });
-
-// Join a game by clicking element with id="game-listing"
-// document.querySelector('.game-listing-test').addEventListener('click', event => {
-//     event.preventDefault();
-
-//     const { id } = event.target.dataset;
-
-//     fetch(`/games/${id}/join`, { method: 'post' })
-//     .then((response) => response.json())
-//     .then(({ id }) => {
-//         if({id}.id != -1) {
-//             console.log("Front-end side worked!");
-//             window.location.replace(`/games/${id}`);
-//         } else {
-//             console.log("GAME IS FULL!!! (Front-end)");
-//         }
-//     })
-//     .catch(console.log);
-// });
-
 /* CHAT JS */
-socket.on('message', message => {
-    fetch('/user', { method: 'get' })
-    .then((response) => response.json())
-    .then((user) => {
-        // Returns user object with fields user.id and user.username
-        console.log(message);
-        outputMessage(message, user.username);
-    })
-    .catch(console.log);
+socket.on('message', msgContent => {
+    outputMessage(msgContent);
 });
 
 const chatForm = document.getElementById('lobby-chat-form');
@@ -112,13 +72,18 @@ chatForm.addEventListener('submit', (event) => {
 
     // Get message text by id
     const msg = event.target.elements.lobbymsg.value;
+    let userDiv = document.getElementById('welcome-user');
+    let username = userDiv.childNodes[1].textContent.split(' ')[1];
+    let msgContent = [msg, username];
 
     // Emitting a message to the server
-    socket.emit('chatMessage', msg);
+    socket.emit('chatMessage', msgContent);
 });
 
 // Output message to DOM
-function outputMessage(message, username) {
+function outputMessage(msgContent) {
+    let message = msgContent[0];
+    let username = msgContent[1];
     // Creates div element for each message to add to chat-messages container.
     const div = document.createElement('div');
     div.classList.add('message');
