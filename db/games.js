@@ -11,7 +11,7 @@ const INSERT_USER_INTO_GAME = 'INSERT INTO game_players (game_id, user_id, curre
 const LIST_OF_GAMES = 'SELECT * FROM games';
 const ALL_PLAYERS_IN_GAME = 'SELECT * FROM game_players WHERE game_id=${game_id}';
 const NUM_PLAYERS_IN_GAME = 'SELECT COUNT(*) FROM game_players WHERE game_id=${game_id}';
-const INSERT_SHUFFLED_CARDS = 'INSERT INTO game_cards (card_id, game_id, user_id, "order", discarded, draw_pile) VALUES %L';
+const INSERT_SHUFFLED_CARDS = 'INSERT INTO game_cards (card_id, game_id, user_id, "order", discarded, active_discard, draw_pile) VALUES %L';
 const UPDATE_CARDS_NEW_PLAYER = 'UPDATE game_cards SET user_id=${user_id}, draw_pile=0 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id';
 const SELECT_ALL_CARDS_IN_GAME = 'SELECT * from game_cards WHERE game_id=${game_id}';
 
@@ -89,7 +89,7 @@ const userListByGame = (game_id) =>
 const shuffle = (cards, game_id, user_id) => {
     let j, x, i;
     let cardsArray = []; // Nested arrays of values to insert in one format SQL query
-    // FIELDS: card_id, game_id, user_id, "order", discarded, draw_pile
+    // FIELDS: card_id, game_id, user_id, "order", discarded, active_discard, draw_pile
     // Cards.length = 108?
     for(i = cards.length - 1; i >= 0; i--) {
         j = Math.floor(Math.random() * (i + 1));
@@ -98,15 +98,15 @@ const shuffle = (cards, game_id, user_id) => {
         cards[j] = x;
         if (i < 7) {
             // Set last 7 shuffled cards to Player 1's hand
-            cardsArray.push([cards[i].id, game_id, user_id, i+1, 0, 0]);
+            cardsArray.push([cards[i].id, game_id, user_id, i+1, 0, 0, 0]);
         } 
         else if(i == 7) {
             // Init one card for discard pile on game start.
-            cardsArray.push([cards[i].id, game_id, user_id, i+1, 1, 0]);
+            cardsArray.push([cards[i].id, game_id, user_id, i+1, 1, 1, 0]);
         }
         else {
             // Set to Draw Pile (sets default to user_id bc can't currently set user_id = 0 aka violates foreign key)
-            cardsArray.push([cards[i].id, game_id, user_id, i+1, 0, 1]);
+            cardsArray.push([cards[i].id, game_id, user_id, i+1, 0, 0, 1]);
         }
     }
     return cardsArray;
@@ -163,8 +163,14 @@ const getGameDiscardCards = (gameId) => {
     return db.any(GET_DISCARD_CARDS, [gameId]);
 }
 
+const getActiveDiscard = (gameId) => {
+    const GET_ACTIVE_DISCARD = 'SELECT * FROM game_cards WHERE game_id=$1 AND active_discard=1';
+    return db.one(GET_ACTIVE_DISCARD, [gameId]);
+}
+
 const playValidCard = (cardId, gameId, userOrder) => {
-    const PLAY_CARD = 'UPDATE game_cards SET discarded=1 WHERE card_id=$1 AND game_id=$2 RETURNING game_id AS id';
+    const REMOVE_ACTIVE_DISCARDS = 'UPDATE game_cards SET active_discard=0 WHERE game_id=$1 AND active_discard=1';
+    const PLAY_CARD = 'UPDATE game_cards SET discarded=1, active_discard=1 WHERE card_id=$1 AND game_id=$2 RETURNING game_id AS id';
     const REMOVE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=0 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id';
     const UPDATE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=1 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id';
 
@@ -177,6 +183,7 @@ const playValidCard = (cardId, gameId, userOrder) => {
     }
 
     return Promise.all([
+        db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
         db.one(PLAY_CARD, [cardId, gameId]),
         db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
         db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextPlayerOrder})
@@ -193,5 +200,6 @@ module.exports = {
     getCardFromGame,
     getUserFromGame,
     getGameDiscardCards,
+    getActiveDiscard,
     playValidCard
 }

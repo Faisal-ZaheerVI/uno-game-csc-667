@@ -115,7 +115,7 @@ router.post("/:id/play/:card", (req, res, next) => {
                                 // Can the card be played? (i.e. cant play Red 1 on Blue 2)
                                 return Promise.all([
                                     users, gameCard, gameUser, 
-                                    Games.getGameDiscardCards(gameId)]);
+                                    Games.getActiveDiscard(gameId)]);
                             }
                             else {
                                 console.log("It is not this player's turn!");
@@ -135,15 +135,15 @@ router.post("/:id/play/:card", (req, res, next) => {
         })
         .catch(console.log);
     })
-    .then(([users, gameCard, gameUser, discardCards]) => {
-        // discardCards is an array of objects 
-        // (user_id, game_id, card_id, order, discarded, draw_pile)
+    .then(([users, gameCard, gameUser, discard]) => {
+        // discard is an object
+        // (user_id, game_id, card_id, order, discarded, active_discard, draw_pile)
         return Promise.all([
-            gameCard, discardCards, gameUser,
-            Cards.getTwoCardsByIds(gameCard.card_id, discardCards[0].card_id)
+            gameCard, discard, gameUser,
+            Cards.getTwoCardsByIds(gameCard.card_id, discard.card_id)
         ]);
     })
-    .then(([gameCard, discardCards, gameUser, cards]) => {
+    .then(([gameCard, discard, gameUser, cards]) => {
         // Returns array of cards objects (id, color->string, displayName->string)
         let userCard, discardCard;
         if(cards[0].id == gameCard.card_id) {
@@ -157,14 +157,14 @@ router.post("/:id/play/:card", (req, res, next) => {
             discardCard = cards[0];
         }
 
+        console.log("userCard=",userCard);
+        console.log("discardCard=",discardCard);
+
         // Check if user selected card can be played against discard card.
         // First check if cards have the same colors:
         if(userCard.color == discardCard.color) {
             console.log("Cards have the same color!");
             Games.playValidCard(userCard.id, gameId, gameUser.order);
-
-            // Change current_player = 0 for this player,
-            // current_player = 1 for next player 
         }
         // Check if cards have same value:
         else if(userCard.displayName == discardCard.displayName) {
@@ -173,7 +173,7 @@ router.post("/:id/play/:card", (req, res, next) => {
         }
         // Check for Wild Cards:
         // (modify behavior later, act as every color card for now)
-        else if(userCard.color == "wild" || discardCard.color == "wild") {
+        else if(userCard.color == 'wild' || discardCard.color == 'wild') {
             console.log("There is a Wild card!");
             Games.playValidCard(userCard.id, gameId, gameUser.order);
         }

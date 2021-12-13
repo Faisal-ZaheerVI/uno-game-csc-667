@@ -18,7 +18,7 @@ function getGameData(gameId) {
     fetch(`/games/${gameId}/gamestate`, { method:'get' })
     .then((response) => response.json())
     .then((gameData) => {
-        createGameState(gameData, null);
+        createGameState(gameData);
     })
     .catch(console.log);
 }
@@ -33,16 +33,17 @@ gameData[2] = direction (int)
 fields: user_id, game_id, current_player, order
 
 --- game_cards -> array of objects ---
-fields: card_id, user_id, game_id, order, discarded, draw_pile
+fields: card_id, user_id, game_id, order, discarded, active_discard, draw_pile
 */
 
 // Creates initial gameState object and passes to updateGamePage:
-function createGameState(gameData, discardCard) {
+function createGameState(gameData) {
     let gameState = {
         // Current game's id
         game_id: 0,
         // gameState info for all 4 users
         users: [],
+        active_discard: 0,
         discard: [], // Id of recent card in discard (TO change format if cards run out?)
         draw_pile: [], // Id of top of deck card_id (To change format?)
         direction: 0,
@@ -74,6 +75,7 @@ function createGameState(gameData, discardCard) {
     let player4Cards = [];
     let discardedCards = [];
     let drawpileCards = [];
+    let activeDiscard = 0;
     let winner = 0;
 
     for(let i = 0; i < game_cards.length; i++) {
@@ -81,8 +83,11 @@ function createGameState(gameData, discardCard) {
             drawpileCards.push(game_cards[i].card_id);
         }
         if(game_cards[i].discarded == 1) {
-            console.log(game_cards[i].card_id);
             discardedCards.push(game_cards[i].card_id);
+            if(game_cards[i].active_discard == 1) {
+                console.log(game_cards[i].card_id);
+                activeDiscard = game_cards[i].card_id;
+            }
         }
         else {
             if(player1active) {
@@ -159,7 +164,7 @@ function createGameState(gameData, discardCard) {
             cards: player4Cards
         });
     }
-
+    gameState.active_discard = activeDiscard;
     gameState.discard = discardedCards;
     gameState.draw_pile = drawpileCards;
     gameState.direction = game_direction;
@@ -259,8 +264,7 @@ function updateGamePage(gameState) {
         // Update discarded card on front-end?
         let discardPile = document.getElementById('discarded');
         removeAllChildNodes(discardPile);
-        let currentDiscard = gameState.discard.length - 1;
-        let discardCardId = gameState.discard[currentDiscard]; // Check how discard array works?
+        let discardCardId = gameState.active_discard;
         let discardHTML = `<img class="middle-card-image" src="../assets/card_${discardCardId}.png" alt="Top of discard">`;
         discardPile.innerHTML = discardHTML;
 

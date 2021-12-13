@@ -24,6 +24,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER // 1 for true, 0 for false.
       },
+      // Card that is on top of discard pile
+      active_discard: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
       draw_pile: { // Change to boolean?
         allowNull: false,
         type: Sequelize.INTEGER // 1 for true, 0 for false.
