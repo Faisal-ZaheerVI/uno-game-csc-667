@@ -34,10 +34,6 @@
             <h1>Welcome to Game <%= id %></h1>
         <% } %>
 
-        <!-- <h1>You are playing with:</h1>
-        <div id="current-players"></div>
-        <br> -->
-
         <div id="current-user">
             <!-- Player 1 -->
             <h1>User</h1>
@@ -45,93 +41,40 @@
 
         <!-- Player 1 Deck -->
         <!-- 7 random cards -->
-        <div id="mydeck" class="player1Deck">
-            <!-- <div id="card-51" data-id="51">
-                <img onclick="cardToCenter()" class="firstCard" src="../assets/Green_0.png" data-id="51">
-            </div>
-            <div id="card-27" data-id="27">
-                <img onclick="cardToCenter2()" class="secondCard" src="../assets/Blue_1.png" data-id="27">
-            </div>
-            <div id="card-3" data-id="3">
-                <img onclick="cardToCenter3()" class="thirdCard" src="../assets/Red_2.png" data-id="3">
-            </div>
-            <div id="card-79" data-id="79">
-                <img onclick="cardToCenter4()" class="fourthCard" src="../assets/Yellow_3.png" data-id="79">
-            </div>
-            <div id="card-55" data-id="55">
-                <img onclick="cardToCenter5()" class="fifthCard" src="../assets/Green_4.png" data-id="55">
-            </div>
-            <div id="card-31" data-id="31">
-                <img onclick="cardToCenter6()" class="sixthCard" src="../assets/Blue_5.png" data-id="31">
-            </div>
-            <div id="card-7" data-id="7">
-                <img onclick="cardToCenter7()" class="seventhCard" src="../assets/Red_6.png" data-id="7">
-            </div> -->
-        </div>
+        <div id="mydeck" class="player1Deck"></div>
 
         <div class="game-middle">
             <!-- Draw card button -->
-            <button class="btn btn-primary" onclick="">Draw Card</button>
-
-            <!-- Middle Card -->
-            <!-- 1 random card -->
-            <div id="discarded" class="middle-card">
-                <!-- <img class="middle-card-image" src="../assets/Wild.png" alt="middle card"> -->
+            <div id="draw-card">
+                <button class="btn btn-primary">Draw Card</button>
             </div>
 
-            <!-- Uno button -->
+            <!-- Discard pile (shows active_discard) -->
+            <div id="discarded" class="middle-card"></div>
+
+            <!-- Uno button (OPTIONAL) -->
             <button type="button" class="btn btn-danger" onclick="uno()">Uno</button>
         </div>
 
         <div class="enemies">
             <!-- Player 2 Deck -->
             <div id="deck2" class="player2Deck"></div>
-
             <div class="player2">
-                <!-- Player 2 -->
                 <h2>Player 2</h2>
             </div>
             
-
             <!-- Player 3 Deck -->
-            <!-- 7 random cards -->
-            <div id="deck3" class="player2Deck">
-                <!-- <img src="../assets/card_deck.png" alt="middle card">
-                <img src="../assets/card_deck.png" alt="middle card">
-                <img src="../assets/card_deck.png" alt="middle card">
-                <img src="../assets/card_deck.png" alt="middle card">
-                <img src="../assets/card_deck.png" alt="middle card">
-                <img src="../assets/card_deck.png" alt="middle card">
-                <img src="../assets/card_deck.png" alt="middle card"> -->
-            </div>
-        
+            <div id="deck3" class="player2Deck"></div>
             <div class="player2">
-                <!-- Player 2 -->
                 <h2>Player 3</h2>
             </div>
 
             <!-- Player 4 Deck -->
-            <!-- 7 random cards -->
-            <div id="deck4" class="player2Deck">
-                <!-- <img src="../assets/card_deck.png" alt="middle card">
-                <img src="../assets/card_deck.png" alt="middle card">
-                <img src="../assets/card_deck.png" alt="middle card">
-                <img src="../assets/card_deck.png" alt="middle card">
-                <img src="../assets/card_deck.png" alt="middle card">
-                <img src="../assets/card_deck.png" alt="middle card">
-                <img src="../assets/card_deck.png" alt="middle card"> -->
-            </div>
+            <div id="deck4" class="player2Deck"></div>
             <div class="player2">
-                <!-- Player 2 -->
                 <h2>Player 4</h2>
             </div>
         </div>
-
-        <!-- Need this button for chat! -->
-        <div class="create_game_button">
-            <h1 id="create"></h1>
-        </div>
-
 
         <div id="game-chat-container">
             <!-- Container where active chat history is stored. -->

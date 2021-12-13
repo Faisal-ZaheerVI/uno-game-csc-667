@@ -1,19 +1,41 @@
 Game:
     - Implement interactions in Game
         - User plays a card
-            - (DONE) Is the user in the game? Do they own the card? Is it their turn?
-            - Modify card to discard, current_player = 0, move current_player = 1 to
-            next player by order # (if order = 4, go back to order = 1)
-            - If reverse is played, change direction to -1, iterate through player's turns backwards
-                - Implement iterating through players turn based on direction (1 or -1)
-            - If +2 or +4 is played -> Give next player +2 or +4 cards
-                - Next player who gets card based on direction! (1 or -1)
-            - If Wild or +4 played -> Somehow prompt to choose a color?
-                - Javascript alert input prompt to get color?
-        - User draws a card (draw only one card?)
-            - Is it their turn?
+            - Special cards/interactions:
+                - Implement special card interactions
+                - Reverse: Changes direction field in "games"
+                - Skip: Skips over next player  
+                    - Check direction (1 or -1)
+                    - Then add/subtract 2 to next player order
+                    (changes current_player based on new player order)
+                - +2 cards:
+                    - Add 2 draw pile cards to next player
+                        (calculate normal order based on direction 1 or -1)
+                    - Calculate new order for skipping over player
+                - Wild cards:
+                    - +4 cards:
+                        = Choose color (Red, Blue, Green, Yellow)
+                        - Add 4 draw pile cards to next player
+                            (calculate normal order based on direction 1 or -1)
+                        - Calculate new order for skipping over player
+                        - Acts as a chosen color card with any value
+                    - Wild:
+                        - Just choosing color (Red, Blue, Green, Yellow)
+                        - Acts as a chosen color card with any value
+                    - (Javascript alert input prompt to get color?)
+        - User draws a Card
+            - Incorportate /games/:id/draw into +2/+4 card plays???
     - Implement win condition
-    ... Any more???
+        - When a player has no more cards
+        - End the game
+            - Stop updating gameState?
+            - Post an alert or message on screen as to who won?
+    - (OPTIONAL) Implement Call Uno feature
+        - Checks if user is in game, check if its user's turn
+        - Checks if user has two cards (about to play a card)
+        - Displays message to socket that user has called Uno??
+        - Check on next player's turn to call out previous player's not calling Uno
+            - If correct, give previous player 4 cards?
 
 Heroku:
     - Figure out Heroku postinstall issues, and whatever other issues!

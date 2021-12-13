@@ -52,9 +52,8 @@ router.post("/create", (req, res) => {
 /* JOIN A SPECIFIC GAME (by ID) */
 router.post("/:id/join", (req, res) => {
     const { id } = req.params; // Game_id to join specific game by URL
-    let gameId = parseInt(id);
     // Current logged in user (req.user.id) wants to join game by game_id = id
-    Games.join(req.user.id, gameId)
+    Games.join(req.user.id, id)
     .then(({id}) => {
         console.log({id});
         return ({id});
@@ -92,8 +91,8 @@ router.get("/:id/gamestate", (req, res) => {
 router.post("/:id/play/:card", (req, res, next) => {
     const { id, card } = req.params; // Game_id = id, card_id = card
     let userId = req.user.id; // Activer user's id
-    let gameId = parseInt(id);
-    let cardId = parseInt(card);
+    let gameId = parseInt(id); // Parse string gameId
+    let cardId = parseInt(card); // Parse string cardId
     console.log(req.user.username, "played card #", cardId, "in game #", gameId);
     // PLAY CARD VALIDATION:
     Promise.all([Games.userListByGame(gameId), Games.getCardFromGame(gameId, cardId), Games.getUserFromGame(gameId, userId)])
@@ -204,7 +203,44 @@ router.post("/:id/play/:card", (req, res, next) => {
 
 /* DRAWS A CARD IN GAME #(:id) */
 router.post("/:id/draw", (req, res, next) => {
+    // User in game? Is it their turn?
+    // If so, Assign card from draw_pile, broadcast gameState
+    const { id } = req.params;
+    let gameId = parseInt(id);
+    let userId = req.user.id;
+    Promise.all([Games.userListByGame(gameId), Games.getUserFromGame(gameId, userId)])
+    .then(([users, gameUser]) => {
+        // Make sure there are 4 players who joined the game before doing any interactions.
+        if(users.length == 4) {
+            for(let i = 0; i < users.length; i++) {
+                // Make sure user is in the game
+                if(users[i].user_id == userId) {
+                    // User is in the game.
+                    // Is it the user's turn?
+                    if(gameUser.current_player) {
+                        // It is the user's turn.
+                        Games.drawCard(gameId, userId, gameUser.order)
+                        // .then((result) => console.log("Result is=", result))
+                        .catch(console.log);
+                    }
+                    else {
+                        console.log("It is not this player's turn!");
+                    }
+                }
+            }
+        }
+        else {
+            console.log("There isn't 4 players in the game!");
+        }
 
+        Games.getGameState(gameId)
+        .then((results) => {
+            const response = JSON.stringify(results);
+            res.end(response);
+        })
+        .catch(console.log);
+    })
+    .catch(console.log);
 });
 
 module.exports = router;

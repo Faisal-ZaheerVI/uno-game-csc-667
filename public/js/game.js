@@ -315,7 +315,7 @@ function outputMessage(msgContent) {
 
 /* GAME INTERACTIONS JAVASCRIPT (FRONT-END) */
 
-// Playing a Card:
+// PLAYING A CARD:
 const myDeck = document.getElementById('mydeck');
 myDeck.addEventListener('click', event => {
     event.preventDefault();
@@ -324,17 +324,30 @@ myDeck.addEventListener('click', event => {
     const { id } = event.target.dataset;
     let URL = window.location.href;
     let gameId = URL.split('/')[4];
-
-    // REMOVE CARD FROM DOM CODE:
-    // const card = document.getElementById(`card-${id}`);
-    // myDeck.removeChild(card);
-
     console.log("Clicked on card #", id);
     playCard(gameId, id);
 });
 
-function playCard(gameId, cardId) {
-    fetch(`/games/${gameId}/play/${cardId}`, {method: 'POST'})
+async function playCard(gameId, cardId) {
+    await fetch(`/games/${gameId}/play/${cardId}`, {method: 'POST'})
+    .then((response) => response.json())
+    // .then((gameData) => console.log(gameData))
+    .then((gameData) => createGameState(gameData))
+    .catch(console.log);
+}
+
+// DRAW A CARD:
+let drawCardDiv = document.getElementById('draw-card');
+drawCardDiv.addEventListener('click', event => {
+    event.preventDefault();
+    let URL = window.location.href;
+    let gameId = URL.split('/')[4];
+    drawCard(gameId);
+});
+
+function drawCard(gameId) {
+    console.log("Drawing a card in game#", gameId);
+    fetch(`/games/${gameId}/draw`, {method: 'POST'})
     .then((response) => response.json())
     // .then((gameData) => console.log(gameData))
     .then((gameData) => createGameState(gameData))

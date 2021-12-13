@@ -15,6 +15,42 @@ const INSERT_SHUFFLED_CARDS = 'INSERT INTO game_cards (card_id, game_id, user_id
 const UPDATE_CARDS_NEW_PLAYER = 'UPDATE game_cards SET user_id=${user_id}, draw_pile=0 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id';
 const SELECT_ALL_CARDS_IN_GAME = 'SELECT * from game_cards WHERE game_id=${game_id}';
 
+const SELECT_USER_FROM_GAME = 'SELECT * FROM game_players WHERE game_id=$1 AND user_id=$2';
+const GET_DISCARD_CARDS = 'SELECT * FROM game_cards WHERE game_id=$1 AND discarded=1';
+const GET_ACTIVE_DISCARD = 'SELECT * FROM game_cards WHERE game_id=$1 AND active_discard=1';
+const REMOVE_ACTIVE_DISCARDS = 'UPDATE game_cards SET active_discard=0 WHERE game_id=$1 AND active_discard=1';
+const PLAY_CARD = 'UPDATE game_cards SET discarded=1, active_discard=1 WHERE card_id=$1 AND game_id=$2 RETURNING game_id AS id';
+const REMOVE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=0 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id';
+const UPDATE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=1 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id';
+
+const randomNumber = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+const nextPlayerOrder = (currentUserOrder, direction) => {
+    let nextPlayerOrder = currentUserOrder;
+
+    // Order is NOT reversed.
+    if(direction == 1) {
+        if(currentUserOrder == 4) {
+            nextPlayerOrder = 1;
+        } else {
+            nextPlayerOrder++;
+        }
+    }
+    // Order IS reversed. (when reversed card is played)
+    else if(direction == -1) {
+        if(currentUserOrder == 1) {
+            nextPlayerOrder = 4;
+        } else {
+            nextPlayerOrder--;
+        }
+    }
+    return nextPlayerOrder;
+}
+
 // Sets up a valid default game state when a game is created.
 // Could add number of users we want per game (i.e. 4 players)
 const create = (user_id, title) => 
@@ -154,40 +190,60 @@ const getCardFromGame = (gameId, cardId) => {
 }
 
 const getUserFromGame = (gameId, userId) => {
-    const SELECT_USER_FROM_GAME = 'SELECT * FROM game_players WHERE game_id=$1 AND user_id=$2';
     return db.one(SELECT_USER_FROM_GAME, [gameId, userId]);
 }
 
 const getGameDiscardCards = (gameId) => {
-    const GET_DISCARD_CARDS = 'SELECT * FROM game_cards WHERE game_id=$1 AND discarded=1';
     return db.any(GET_DISCARD_CARDS, [gameId]);
 }
 
 const getActiveDiscard = (gameId) => {
-    const GET_ACTIVE_DISCARD = 'SELECT * FROM game_cards WHERE game_id=$1 AND active_discard=1';
     return db.one(GET_ACTIVE_DISCARD, [gameId]);
 }
 
+// TODO: Add direction parameter (and others to accomodate for special cards)
 const playValidCard = (cardId, gameId, userOrder) => {
-    const REMOVE_ACTIVE_DISCARDS = 'UPDATE game_cards SET active_discard=0 WHERE game_id=$1 AND active_discard=1';
-    const PLAY_CARD = 'UPDATE game_cards SET discarded=1, active_discard=1 WHERE card_id=$1 AND game_id=$2 RETURNING game_id AS id';
-    const REMOVE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=0 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id';
-    const UPDATE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=1 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id';
-
-    // Change logic for reverse cards? Skip? +2?
-    let nextPlayerOrder = userOrder;
-    if(userOrder == 4) {
-        nextPlayerOrder = 1;
-    } else {
-        nextPlayerOrder++;
-    }
+    // Hard coded for normal direction (direction = 1).
+    // Change to -1 or take direction as parameter
+    // Change for Skip, +2, +4 cards?
+    const nextOrder = nextPlayerOrder(userOrder, 1);
 
     return Promise.all([
+        // Removes cards on top of discard (visibility purposes)
         db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
+        // Adds played card as top of the discard pile (visible upon gameState update)
         db.one(PLAY_CARD, [cardId, gameId]),
+        // Removes current player status from current user.
         db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
-        db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextPlayerOrder})
+        // Adds current player status to the next player 
+        // (determined by order, TODO add: direction/special cards effect)
+        db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
     ]);
+}
+
+// TODO: Add direction parameter (and others to accomodate for special cards)
+const drawCard = (gameId, userId, userOrder) => {
+    const GET_DRAW_PILE_CARDS = 'SELECT * FROM game_cards WHERE game_id=$1 AND draw_pile=1 AND discarded=0 AND active_discard=0';
+    return db.any(GET_DRAW_PILE_CARDS, [gameId])
+    .then((drawCards) => {
+        // Array of objects (cards in draw_pile)
+        // user_id, game_id, card_id, order, discarded, active_discard, draw_pile
+        const randomCardIndex = randomNumber(0, drawCards.length - 1);
+        const INSERT_DRAW_CARD = 'UPDATE game_cards SET user_id=$1, discarded=0, active_discard=0, draw_pile=0 WHERE game_id=$2 AND card_id=$3';
+        const drawCardId = drawCards[randomCardIndex].card_id;
+        const nextOrder = nextPlayerOrder(userOrder, 1);
+        console.log("Draw card id=", drawCardId);
+        return Promise.all([
+            // Inserts draw card to the user deck in the game.
+            db.one(INSERT_DRAW_CARD, [userId, gameId, drawCardId]),
+            // Removes current player status from current user.
+            db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
+            // Adds current player status to the next player 
+            // (determined by order, TODO add: direction/special cards effect)
+            db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
+        ]);
+    })
+    .catch(console.log);
 }
 
 module.exports = {
@@ -201,5 +257,6 @@ module.exports = {
     getUserFromGame,
     getGameDiscardCards,
     getActiveDiscard,
-    playValidCard
+    playValidCard,
+    drawCard
 }
