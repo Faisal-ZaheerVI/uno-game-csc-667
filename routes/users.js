@@ -98,9 +98,7 @@ router.get('/:id', function(req, res) {
   const { id } = req.params;
 
   Users.findUserById(id)
-  .then((results) => {
-    return results;
-  })
+  .then((response) => res.json(response))
   .catch(console.log);
 });
 

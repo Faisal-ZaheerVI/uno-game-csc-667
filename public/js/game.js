@@ -3,7 +3,6 @@ const socket = io();
 socket.on('updateGameState', gameState => {
     console.log("Gamestate=", gameState);
     updateGamePage(gameState);
-    // getGameData(gameState.game_id);
 });
 
 // ON PAGE LOAD:
@@ -69,6 +68,7 @@ function createGameState(gameData) {
         }
     }
 
+    // Declare variables whose values will be added to gameState object.
     let player1Cards = [];
     let player2Cards = [];
     let player3Cards = [];
@@ -78,6 +78,8 @@ function createGameState(gameData) {
     let activeDiscard = 0;
     let winner = 0;
 
+    // Go through game_cards, add cards to respective arrays.
+    // (i.e., which cards are in the draw pile, in discard, in P2's hand, etc.)
     for(let i = 0; i < game_cards.length; i++) {
         if(game_cards[i].draw_pile == 1) {
             drawpileCards.push(game_cards[i].card_id);
@@ -85,7 +87,6 @@ function createGameState(gameData) {
         if(game_cards[i].discarded == 1) {
             discardedCards.push(game_cards[i].card_id);
             if(game_cards[i].active_discard == 1) {
-                console.log(game_cards[i].card_id);
                 activeDiscard = game_cards[i].card_id;
             }
         }
@@ -117,17 +118,28 @@ function createGameState(gameData) {
         }
     }
 
-    console.log("Discarded array=", discardedCards);
-
+    // CHECK WIN CONDITION:
     if(player1Cards.length < 1 && player1active) {
-        winner = player1.order;
+        console.log("Player", player1.order, "has won the game!");
+        // winner = player1.order;
+        winner = player1.user_id;
     } else if (player2Cards.length < 1 && player2active) {
-        winner = player2.order;
+        console.log("Player", player2.order, "has won the game!");
+        // winner = player2.order;
+        winner = player2.user_id;
     } else if (player3Cards.length < 1 && player3active) {
-        winner = player3.order;
+        console.log("Player", player3.order, "has won the game!");
+        // winner = player3.order;
+        winner = player3.user_id;
     } else if (player4Cards.length < 1 && player4active) {
-        winner = player4.order;
-    }
+        console.log("Player", player4.order, "has won the game!");
+        // winner = player4.order;
+        winner = player4.user_id;
+    } 
+    // SHOW WHEN DRAW PILE CARDS ARE EMPTY (TO REMOVE):
+    else if(drawpileCards.length < 1) {
+        console.log("Draw pile cards are empty!!!");
+    } 
 
     // Update the gameState object value
     gameState.game_id = player1.game_id;
@@ -197,79 +209,131 @@ function removeAllChildNodes(parent) {
 }
 
 function updateGamePage(gameState) {
-    /* UPDATE CURRENT USER'S CARDS */
-    const myDeck = document.getElementById('mydeck');
-    removeAllChildNodes(myDeck);
+    if(gameState.winner != 0) {
+        let userId = gameState.winner;
+        // If there is a winner, stop updating the page.
+        fetch(`/users/${userId}`, { method: 'get' })
+        .then((response) => response.json())
+        // Returns user object with fields user.id and user.username
+        .then((user) => {
+            /* REMOVE All player's cards from deck */
+            const myDeck = document.getElementById('mydeck');
+            const deck2 = document.getElementById('deck2');
+            const deck3 = document.getElementById('deck3');
+            const deck4 = document.getElementById('deck4');
+            removeAllChildNodes(myDeck);
+            removeAllChildNodes(deck2);
+            removeAllChildNodes(deck3);
+            removeAllChildNodes(deck4);
 
-    fetch('/user', { method: 'get' })
-    .then((response) => response.json())
-    // Returns user object with fields user.id and user.username
-    .then((user) => {
-        let currentUser;
-        for(let i = 0; i < gameState.users.length; i++) {
-            if(gameState.users[i].user_id == user.id) {
-                currentUser = gameState.users[i];
+            // Updates discard pile before ending game
+            let discardPile = document.getElementById('discarded');
+            removeAllChildNodes(discardPile);
+            let discardCardId = gameState.active_discard;
+            let discardHTML = `<img class="middle-card-image" src="../assets/card_${discardCardId}.png" alt="Top of discard">`;
+            discardPile.innerHTML = discardHTML;
+
+            /* DISPLAY THE WINNER'S USERNAME */
+            let winnerId = user.id;
+            let winnerName = user.username;
+            let winnerDiv = document.getElementById('winner');
+            let winnerHTML = `<h1><b>${winnerName} has won the game!</b></h1>`;
+            winnerDiv.innerHTML = winnerHTML;
+        })
+        .catch(console.log);
+
+    } 
+
+    else {
+        /* UPDATE CURRENT USER'S CARDS */
+        const myDeck = document.getElementById('mydeck');
+        removeAllChildNodes(myDeck);
+
+        fetch('/user', { method: 'get' })
+        .then((response) => response.json())
+        // Returns user object with fields user.id and user.username
+        .then((user) => {
+            let currentUser;
+            for(let i = 0; i < gameState.users.length; i++) {
+                if(gameState.users[i].user_id == user.id) {
+                    currentUser = gameState.users[i];
+                }
             }
-        }
-        let currentUserOrder = currentUser.order;
-        let orderArr = [1,2,3,4]; // 3,4,1,2
-        while(orderArr[0] != currentUserOrder) {
-            let value = orderArr.shift();
-            orderArr.push(value);
-        }
+            let currentUserOrder = currentUser.order;
+            let orderArr = [1,2,3,4]; // 3,4,1,2
+            while(orderArr[0] != currentUserOrder) {
+                let value = orderArr.shift();
+                orderArr.push(value);
+            }
 
-        for(let i = 0; i < currentUser.cards.length; i++) {
-            let card = document.createElement('div');
-            let cardId = currentUser.cards[i];
-            card.setAttribute("id", `card-${cardId}`);
-            card.innerHTML = `<img src="../assets/card_${cardId}.png" data-id="${cardId}">`
-            myDeck.appendChild(card);
-        }
+            for(let i = 0; i < currentUser.cards.length; i++) {
+                let card = document.createElement('div');
+                let cardId = currentUser.cards[i];
+                card.setAttribute("id", `card-${cardId}`);
+                card.innerHTML = `<img src="../assets/card_${cardId}.png" data-id="${cardId}">`
+                myDeck.appendChild(card);
+            }
 
-        /* UPDATING OTHER PLAYER'S CARDS */
-        const deck2 = document.getElementById('deck2');
-        const deck3 = document.getElementById('deck3');
-        const deck4 = document.getElementById('deck4');
-        removeAllChildNodes(deck2);
-        removeAllChildNodes(deck3);
-        removeAllChildNodes(deck4);
+            /* UPDATING OTHER PLAYER'S CARDS */
+            const deck2 = document.getElementById('deck2');
+            const deck3 = document.getElementById('deck3');
+            const deck4 = document.getElementById('deck4');
+            removeAllChildNodes(deck2);
+            removeAllChildNodes(deck3);
+            removeAllChildNodes(deck4);
 
-        for (let i = 0; i < gameState.users.length; i++) {
-            for(let j = 1; j < orderArr.length; j++) {
-                if(gameState.users[i].order == orderArr[j]) {
-                    for(let k = 0; k < gameState.users[i].cards.length; k++) {
-                        let card = document.createElement('div');
-                        let cardId = gameState.users[i].cards[k];
-                        card.setAttribute("id", `card-${cardId}`);
-                        card.innerHTML = `<img src="../assets/card_deck.png" alt="player-${orderArr[j]}-card">`
-                        // myDeck.appendChild(card);
-                        switch(j) {
-                            case 1:
-                                deck2.appendChild(card);
-                                break;
-                            case 2:
-                                deck3.appendChild(card);
-                                break;
-                            case 3:
-                                deck4.appendChild(card);
-                                break;
-                            default:
-                                break;
+            for (let i = 0; i < gameState.users.length; i++) {
+                for(let j = 1; j < orderArr.length; j++) {
+                    if(gameState.users[i].order == orderArr[j]) {
+                        for(let k = 0; k < gameState.users[i].cards.length; k++) {
+                            let card = document.createElement('div');
+                            let cardId = gameState.users[i].cards[k];
+                            card.setAttribute("id", `card-${cardId}`);
+                            card.innerHTML = `<img src="../assets/card_deck.png" alt="player-${orderArr[j]}-card">`
+                            // myDeck.appendChild(card);
+                            switch(j) {
+                                case 1:
+                                    deck2.appendChild(card);
+                                    break;
+                                case 2:
+                                    deck3.appendChild(card);
+                                    break;
+                                case 3:
+                                    deck4.appendChild(card);
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
                 }
             }
-        }
 
-        // Update discarded card on front-end?
-        let discardPile = document.getElementById('discarded');
-        removeAllChildNodes(discardPile);
-        let discardCardId = gameState.active_discard;
-        let discardHTML = `<img class="middle-card-image" src="../assets/card_${discardCardId}.png" alt="Top of discard">`;
-        discardPile.innerHTML = discardHTML;
+            // Update active_discard on discard deck
+            let discardPile = document.getElementById('discarded');
+            removeAllChildNodes(discardPile);
+            let discardCardId = gameState.active_discard;
+            let discardHTML = `<img class="middle-card-image" src="../assets/card_${discardCardId}.png" alt="Top of discard">`;
+            discardPile.innerHTML = discardHTML;
 
-    })
-    .catch(console.log);
+            // Update Draw Pile visiblity
+            // (If there's available draw cards, show back of card)
+            let drawPile = document.getElementById('draw-pile-deck');
+            removeAllChildNodes(drawPile);
+            if(gameState.draw_pile.length > 0) {
+                let drawPileHTML = `<img src="../assets/card_deck.png" alt="draw-pile-deck">`;
+                drawPile.innerHTML = drawPileHTML;
+            }
+            else {
+                let drawPileHTML = `<img src="../assets/card_empty.png" alt="draw-pile-deck">`
+                drawPile.innerHTML = drawPileHTML;
+            }
+
+        })
+        .catch(console.log);
+    }
+
+    
 }
 
 function uno() {
