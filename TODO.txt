@@ -1,8 +1,9 @@
-Game:
+GAME LOGIC:
+    - (FOR LATER) Fix weird double click to do most interactions?
+        - Rarely is one click for interactions (i.e. clicking card to play)
     - Implement interactions in Game
-        - User plays a card
+        - PLAYS CARD:
             - Special cards/interactions:
-                - Implement special card interactions
                 - Reverse: Changes direction field in "games"
                 - Skip: Skips over next player  
                     - Check direction (1 or -1)
@@ -23,20 +24,21 @@ Game:
                         - Just choosing color (Red, Blue, Green, Yellow)
                         - Acts as a chosen color card with any value
                     - (Javascript alert input prompt to get color?)
-        - User draws a Card
+        - DRAWS CARD:
             - Incorportate /games/:id/draw into +2/+4 card plays???
-    - Implement win condition
+    - WIN CONDITION:
         - When a player has no more cards
         - End the game
-            - Stop updating gameState?
+            - (DONE-ish?) Stop updating gameState?
+                - Safely disable Draw button (or remove?)
             - Post an alert or message on screen as to who won?
-    - (OPTIONAL) Implement Call Uno feature
+    - (OPTIONAL) CALL UNO! feature
         - Checks if user is in game, check if its user's turn
         - Checks if user has two cards (about to play a card)
         - Displays message to socket that user has called Uno??
         - Check on next player's turn to call out previous player's not calling Uno
             - If correct, give previous player 4 cards?
 
-Heroku:
+HEROKU:
     - Figure out Heroku postinstall issues, and whatever other issues!
     - Fix Heroku database issues or something

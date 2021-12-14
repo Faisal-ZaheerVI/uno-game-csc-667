@@ -51,6 +51,22 @@ const nextPlayerOrder = (currentUserOrder, direction) => {
     return nextPlayerOrder;
 }
 
+const skipNextPlayerOrder = (currentUserOrder) => {
+    let nextPlayerOrder = currentUserOrder;
+
+    // Regardless of direction, a skip always goes to other end of the board.
+    // (i.e.) If player 1 skips P2 turn, it will go to P3 turn regardless of direction.
+    switch(currentUserOrder) {
+        case 1: nextPlayerOrder = 3; break;
+        case 2: nextPlayerOrder = 4; break;
+        case 3: nextPlayerOrder = 1; break;
+        case 4: nextPlayerOrder = 2; break;
+        default: break;
+    }
+
+    return nextPlayerOrder;
+}
+
 // Sets up a valid default game state when a game is created.
 // Could add number of users we want per game (i.e. 4 players)
 const create = (user_id, title) => 
@@ -246,6 +262,92 @@ const drawCard = (gameId, userId, userOrder) => {
     .catch(console.log);
 }
 
+const playPlusTwoCard = (cardId, gameId, userOrder) => {
+    // Removes cards on top of discard (visibility purposes)
+    // Adds played card as top of the discard pile (visible upon gameState update)
+
+    // Removes current player status from current user.
+    // Adds current player status to the next player 
+
+    let nextOrder = skipNextPlayerOrder(userOrder);
+    
+    return Promise.all([
+        // Removes cards on top of discard (visibility purposes)
+        db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
+        // Adds played card as top of the discard pile (visible upon gameState update)
+        db.one(PLAY_CARD, [cardId, gameId]),
+        // Removes current player status from current user.
+        db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
+        // Adds current player status to the next player 
+        // (determined by order, TODO add: direction/special cards effect)
+        db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
+    ]);
+}
+
+const playReverseCard = (cardId, gameId, userOrder) => {
+    const nextOrder = nextPlayerOrder(userOrder, 1);
+
+    return Promise.all([
+        // Removes cards on top of discard (visibility purposes)
+        db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
+        // Adds played card as top of the discard pile (visible upon gameState update)
+        db.one(PLAY_CARD, [cardId, gameId]),
+        // Removes current player status from current user.
+        db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
+        // Adds current player status to the next player 
+        // (determined by order, TODO add: direction/special cards effect)
+        db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
+    ]);
+}
+
+const playSkipCard = (cardId, gameId, userOrder) => {
+    const nextOrder = skipNextPlayerOrder(userOrder);
+
+    return Promise.all([
+        // Removes cards on top of discard (visibility purposes)
+        db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
+        // Adds played card as top of the discard pile (visible upon gameState update)
+        db.one(PLAY_CARD, [cardId, gameId]),
+        // Removes current player status from current user.
+        db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
+        // Adds current player status to the next player 
+        // (determined by order, TODO add: direction/special cards effect)
+        db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
+    ]);
+}
+
+const playWildCard = (cardId, gameId, userOrder, color) => {
+    const nextOrder = nextPlayerOrder(userOrder, 1);
+
+    return Promise.all([
+        // Removes cards on top of discard (visibility purposes)
+        db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
+        // Adds played card as top of the discard pile (visible upon gameState update)
+        db.one(PLAY_CARD, [cardId, gameId]),
+        // Removes current player status from current user.
+        db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
+        // Adds current player status to the next player 
+        // (determined by order, TODO add: direction/special cards effect)
+        db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
+    ]);
+}
+
+const playWildPlusFourCard = (cardId, gameId, userOrder, color) => {
+    let nextOrder = skipNextPlayerOrder(userOrder);
+    
+    return Promise.all([
+        // Removes cards on top of discard (visibility purposes)
+        db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
+        // Adds played card as top of the discard pile (visible upon gameState update)
+        db.one(PLAY_CARD, [cardId, gameId]),
+        // Removes current player status from current user.
+        db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
+        // Adds current player status to the next player 
+        // (determined by order, TODO add: direction/special cards effect)
+        db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
+    ]);
+}
+
 module.exports = {
     create, 
     join, 
@@ -258,5 +360,10 @@ module.exports = {
     getGameDiscardCards,
     getActiveDiscard,
     playValidCard,
-    drawCard
+    drawCard,
+    playPlusTwoCard,
+    playReverseCard,
+    playSkipCard,
+    playWildCard,
+    playWildPlusFourCard
 }

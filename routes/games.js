@@ -93,6 +93,16 @@ router.post("/:id/play/:card", (req, res, next) => {
     let userId = req.user.id; // Activer user's id
     let gameId = parseInt(id); // Parse string gameId
     let cardId = parseInt(card); // Parse string cardId
+
+    // Hard coding special cards (change to more efficient method)
+    // First two Red, next two Blue, then two Green, two Yellow
+    let plusTwoCardIds = [20, 23, 45, 48, 70, 73, 95, 98];
+    let reverseCardIds = [21, 24, 46, 49, 71, 74, 96, 99];
+    let skipCardIds = [22, 25, 47, 50, 72, 75, 97, 100];
+
+    // let plusFourCardIds = [102, 104, 106, 108];
+    // let wildCardIds = [101, 103, 105, 107];
+
     console.log(req.user.username, "played card #", cardId, "in game #", gameId);
     // PLAY CARD VALIDATION:
     Promise.all([Games.userListByGame(gameId), Games.getCardFromGame(gameId, cardId), Games.getUserFromGame(gameId, userId)])
@@ -114,7 +124,8 @@ router.post("/:id/play/:card", (req, res, next) => {
                                 // Can the card be played? (i.e. cant play Red 1 on Blue 2)
                                 return Promise.all([
                                     users, gameCard, gameUser, 
-                                    Games.getActiveDiscard(gameId)]);
+                                    Games.getActiveDiscard(gameId)
+                                ]);
                             }
                             else {
                                 console.log("It is not this player's turn!");
@@ -159,25 +170,56 @@ router.post("/:id/play/:card", (req, res, next) => {
         console.log("userCard=",userCard);
         console.log("discardCard=",discardCard);
 
-        // Check if user selected card can be played against discard card.
-        // First check if cards have the same colors:
-        if(userCard.color == discardCard.color) {
-            console.log("Cards have the same color!");
-            Games.playValidCard(userCard.id, gameId, gameUser.order);
+        // SPECIAL CARDS CHECK: 
+        let specialCard = false;
+        // If a REVERSE card is played
+        for(index in plusTwoCardIds) {
+            if(cardId == plusTwoCardIds[index]) {
+                console.log("Plus TWO card was played with cardId=", cardId);
+                specialCard = true;
+                let cardColor = userCard.color;
+                Games.playPlusTwoCard(userCard.id, gameId, gameUser.order);
+            }
         }
-        // Check if cards have same value:
-        else if(userCard.displayName == discardCard.displayName) {
-            console.log("Cards have the same value!");
-            Games.playValidCard(userCard.id, gameId, gameUser.order);
+        for(index in reverseCardIds) {
+            if(cardId == reverseCardIds[index]) {
+                console.log("Reverse card was played with cardId=", cardId);
+                specialCard = true;
+                let cardColor = userCard.color;
+                Games.playReverseCard(userCard.id, gameId, gameUser.order);
+            }
         }
-        // Check for Wild Cards:
-        // (modify behavior later, act as every color card for now)
-        else if(userCard.color == 'wild' || discardCard.color == 'wild') {
-            console.log("There is a Wild card!");
-            Games.playValidCard(userCard.id, gameId, gameUser.order);
+        for(index in skipCardIds) {
+            if(cardId == skipCardIds[index]) {
+                console.log("SKIP card was played with cardId=", cardId);
+                specialCard = true;
+                let cardColor = userCard.color;
+                Games.playSkipCard(userCard.id, gameId, gameUser.order);
+            }
         }
-        else {
-            console.log("Cards DONT share the same color/value!");
+        // END SPECIAL CARDS CHECK
+
+        if(!specialCard) {
+            // Check if user selected card can be played against discard card.
+            // First check if cards have the same colors:
+            if(userCard.color == discardCard.color) {
+                console.log("Cards have the same color!");
+                Games.playValidCard(userCard.id, gameId, gameUser.order);
+            }
+            // Check if cards have same value:
+            else if(userCard.displayName == discardCard.displayName) {
+                console.log("Cards have the same value!");
+                Games.playValidCard(userCard.id, gameId, gameUser.order);
+            }
+            // Check for Wild Cards:
+            // (modify behavior later, act as every color card for now)
+            else if(userCard.color == 'wild' || discardCard.color == 'wild') {
+                console.log("There is a Wild card!");
+                Games.playValidCard(userCard.id, gameId, gameUser.order);
+            }
+            else {
+                console.log("Cards DONT share the same color/value!");
+            }
         }
 
         // After playing a valid card, send gateState data to front-end.
@@ -199,6 +241,106 @@ router.post("/:id/play/:card", (req, res, next) => {
     // Then broadcast gameState to all users
 
     // If invalid, just update gameState
+});
+
+/* PLAYS A **WILD** CARD IN GAME #(:id) */
+router.post("/:id/playwild/:card/:color", (req, res, next) => {
+    const { id, card, color } = req.params; // Game_id = id, card_id = card
+    let userId = req.user.id; // Activer user's id
+    let gameId = parseInt(id); // Parse string gameId to int
+    let cardId = parseInt(card); // Parse string cardId to int
+    let cardColor = color; // String value
+
+    // Hard coding Wild cardIds (change to more efficient method)
+    let plusFourCardIds = [102, 104, 106, 108];
+    let wildCardIds = [101, 103, 105, 107];
+
+    console.log(req.user.username, "played card #", cardId, "in game #", gameId);
+    // PLAY CARD VALIDATION:
+    Promise.all([Games.userListByGame(gameId), Games.getCardFromGame(gameId, cardId), Games.getUserFromGame(gameId, userId)])
+    .then(([users, gameCard, gameUser]) => {
+        // Make sure there are 4 players who joined the game before doing any interactions.
+        if(users.length == 4) {
+            for(let i = 0; i < users.length; i++) {
+                // Make sure user is in the game
+                if(users[i].user_id == userId) {
+                    // User is in the game.
+                    // Make sure the user holds this card:
+                    if(gameCard.user_id == userId && gameCard.discarded == 0 
+                        && gameCard.draw_pile == 0) {
+                            // User does hold the card.
+                            // Make sure it's the user's turn:
+                            if(gameUser.current_player) {
+                                // It is the user's turn.
+                                console.log("It is the player's turn!");
+                                // Can the card be played? (i.e. cant play Red 1 on Blue 2)
+                                return Promise.all([
+                                    users, gameCard, gameUser, 
+                                    Games.getActiveDiscard(gameId)
+                                ]);
+                            }
+                            else {
+                                console.log("It is not this player's turn!");
+                            }
+                    }
+                }
+            }
+        }
+        else {
+            console.log("There isn't 4 players in the game!");
+        }
+        // If Validation checks fail, send gameState back to front-end.
+        Games.getGameState(gameId)
+        .then((results) => {
+            const response = JSON.stringify(results);
+            res.end(response);
+        })
+        .catch(console.log);
+    })
+    .then(([users, gameCard, gameUser, discard]) => {
+        // discard is an object
+        // (user_id, game_id, card_id, order, discarded, active_discard, draw_pile)
+        return Promise.all([
+            gameCard, discard, gameUser,
+            Cards.getTwoCardsByIds(gameCard.card_id, discard.card_id)
+        ]);
+    })
+    .then(([gameCard, discard, gameUser, cards]) => {
+        // Returns array of cards objects (id, color->string, displayName->string)
+        let userCard, discardCard;
+        if(cards[0].id == gameCard.card_id) {
+            // Card[0] is user played card.
+            userCard = cards[0];
+            discardCard = cards[1];
+        }
+        else {
+            // Card[1] is user played card.
+            userCard = cards[1];
+            discardCard = cards[0];
+        }
+
+        console.log("userCard=",userCard);
+        console.log("discardCard=",discardCard);
+
+        if(userCard.id % 2 == 0) {
+            // Played a Plus FOUR card!
+            Games.playWildPlusFourCard(userCard.id, gameId, gameUser.order);
+        }
+
+        else {
+            // Played a WILD card!
+            Games.playWildCard(userCard.id, gameId, gameUser.order);
+        }
+
+        // After playing a valid card, send gateState data to front-end.
+        Games.getGameState(gameId)
+        .then((results) => {
+            const response = JSON.stringify(results);
+            res.end(response);
+        })
+        .catch(console.log);
+    })
+    .catch(console.log);
 });
 
 /* DRAWS A CARD IN GAME #(:id) */

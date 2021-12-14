@@ -1,8 +1,14 @@
 const socket = io();
 
+// Listens for gameState object, then uses the data to update the page to all users.
 socket.on('updateGameState', gameState => {
     console.log("Gamestate=", gameState);
     updateGamePage(gameState);
+});
+
+// Informs other players of chosen Wild card color by alert().
+socket.on('wildCard', (color) => {
+    alert('Color chosen was ' + color);
 });
 
 // ON PAGE LOAD:
@@ -383,21 +389,53 @@ function outputMessage(msgContent) {
 const myDeck = document.getElementById('mydeck');
 myDeck.addEventListener('click', event => {
     event.preventDefault();
-    // Need game_id and card_id
     // Getting card_id
     const { id } = event.target.dataset;
+    // Get game_id by using URL of the page (not efficient?)
     let URL = window.location.href;
     let gameId = URL.split('/')[4];
     console.log("Clicked on card #", id);
     playCard(gameId, id);
 });
 
+// Sends played card info to server, receives gameState regardless.
 async function playCard(gameId, cardId) {
-    await fetch(`/games/${gameId}/play/${cardId}`, {method: 'POST'})
-    .then((response) => response.json())
-    // .then((gameData) => console.log(gameData))
-    .then((gameData) => createGameState(gameData))
-    .catch(console.log);
+    // let plusFourCardIds = [102, 104, 106, 108];
+    // let wildCardIds = [101, 103, 105, 107];
+    let wildExists = false;
+    // Check for Wild cards played.
+    // If Wild card is played, ask user for color?
+    for(let i = 101; i < 109; i++) {
+        if(cardId == i) {
+            wildExists = true;
+        }
+    }
+
+    if(wildExists) {
+        // Post to a different fetch call: '/games/${gameId}/playwild/${cardId}'
+        let color = chooseColor().toLowerCase();
+        // Informs all players of chosen Wild card color.
+        socket.emit('wildCard', color);
+        if(cardId % 2 == 0) {
+            console.log("Played a Plus FOUR card!");
+            console.log("Chose color=", color);
+        }
+        else {
+            console.log("Played a WILD card!");
+            console.log("Chose color=", color);
+        }
+        await fetch(`/games/${gameId}/playwild/${cardId}/${color}`, { method: 'POST' })
+        .then((response) => response.json())
+        // .then((gameData) => createGameState(gameData))
+        .catch(console.log);
+    }
+    // A Non-Wild Card is played:
+    else {
+        await fetch(`/games/${gameId}/play/${cardId}`, { method: 'POST' })
+        .then((response) => response.json())
+        .then((gameData) => createGameState(gameData))
+        .catch(console.log);
+    }
 }
 
 // DRAW A CARD:
@@ -409,6 +447,7 @@ drawCardDiv.addEventListener('click', event => {
     drawCard(gameId);
 });
 
+// Sends fetch to draw card, receives gameState regardless.
 function drawCard(gameId) {
     console.log("Drawing a card in game#", gameId);
     fetch(`/games/${gameId}/draw`, {method: 'POST'})
@@ -416,4 +455,35 @@ function drawCard(gameId) {
     // .then((gameData) => console.log(gameData))
     .then((gameData) => createGameState(gameData))
     .catch(console.log);
+}
+
+// Prompts user to choose a VALID color using alert()
+function chooseColor() {
+    let red = "red";
+    let blue = "blue";
+    let green = "green";
+    let yellow = "yellow";
+    let validColor = false;
+    let colorInput = prompt('Choose a color (Red, Blue, Green, Yellow)');
+
+    switch(colorInput.toLowerCase()) {
+        case red: validColor = true; break;
+        case blue: validColor = true; break;
+        case green: validColor = true; break;
+        case yellow: validColor = true; break;
+        default: validColor = false; break;
+    }
+
+    while(!validColor) {
+        foo = prompt('Type here');
+        switch(foo.toLowerCase()) {
+            case red: validColor = true; break;
+            case blue: validColor = true; break;
+            case green: validColor = true; break;
+            case yellow: validColor = true; break;
+            default: validColor = false; break;
+        }
+    }
+
+    return colorInput;
 }

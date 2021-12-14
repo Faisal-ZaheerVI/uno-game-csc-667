@@ -29,6 +29,10 @@ const init = ( app, server ) => {
       io.emit('updateGameState', gameState);
     });
 
+    socket.on('wildCard', (color) => {
+      io.emit('wildCard', color);
+    });
+
   });
 };
 
