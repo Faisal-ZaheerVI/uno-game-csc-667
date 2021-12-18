@@ -15,8 +15,8 @@ const flash = require('express-flash');
 // initializePassport(passport);
 
 if(process.env.NODE_ENV === "development") {
-  require("dotenv").config();
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+  require("dotenv").config();
 }
 
 const indexRouter = require('./routes/index');
