@@ -54,13 +54,13 @@ router.post('/register', async (req, res, next) => {
     let hashedPassword = await bcrypt.hash(password, 15);
 
     // Checks for existing usernames in database
-    await db.any('SELECT * FROM users WHERE username = $1', username)
+    await db.any('SELECT * FROM users WHERE username = $1;', username)
     .then( result => {
       if(result.length > 0) {
         errors.push({message: "Username already exists."});
         res.render('registration', { errors })
       } else {
-        db.query(`INSERT INTO users ("username", "email", "password", "created") VALUES ($1, $2, $3, $4)`, [username, email, hashedPassword, "now()"])
+        db.query(`INSERT INTO users ("username", "email", "password", "created") VALUES ($1, $2, $3, $4);`, [username, email, hashedPassword, "now()"])
         .then((_) => {
           req.flash('success', 'User account has been made!');
           res.redirect('/login');
