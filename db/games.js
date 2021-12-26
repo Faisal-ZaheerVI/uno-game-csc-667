@@ -5,23 +5,23 @@ var format = require('pg-format'); // To SQL insert nested array of array values
 const MAX_PLAYERS = 4;
 
 // SQL statement presets:
-const CREATE_GAME = 'INSERT INTO games (direction, user_id, title, created) VALUES (1, $1, $2, $3) RETURNING id';
-const INSERT_CARD_QUERY = 'INSERT INTO game_cards (card_id, game_id, user_id, "order", discarded, draw_pile) VALUES (${card_id}, ${game_id}, ${user_id}, ${order}, 0, 1)';
-const INSERT_USER_INTO_GAME = 'INSERT INTO game_players (game_id, user_id, current_player, "order") VALUES (${game_id}, ${user_id}, ${current_player}, ${order}) RETURNING game_id AS id';
-const LIST_OF_GAMES = 'SELECT * FROM games';
-const ALL_PLAYERS_IN_GAME = 'SELECT * FROM game_players WHERE game_id=${game_id}';
-const NUM_PLAYERS_IN_GAME = 'SELECT COUNT(*) FROM game_players WHERE game_id=${game_id}';
-const INSERT_SHUFFLED_CARDS = 'INSERT INTO game_cards (card_id, game_id, user_id, "order", discarded, active_discard, draw_pile) VALUES %L';
-const UPDATE_CARDS_NEW_PLAYER = 'UPDATE game_cards SET user_id=${user_id}, draw_pile=0 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id';
-const SELECT_ALL_CARDS_IN_GAME = 'SELECT * from game_cards WHERE game_id=${game_id}';
+const CREATE_GAME = 'INSERT INTO games (direction, user_id, title, created) VALUES (1, $1, $2, $3) RETURNING id;';
+const INSERT_CARD_QUERY = 'INSERT INTO game_cards (card_id, game_id, user_id, "order", discarded, draw_pile) VALUES (${card_id}, ${game_id}, ${user_id}, ${order}, 0, 1);';
+const INSERT_USER_INTO_GAME = 'INSERT INTO game_players (game_id, user_id, current_player, "order") VALUES (${game_id}, ${user_id}, ${current_player}, ${order}) RETURNING game_id AS id;';
+const LIST_OF_GAMES = 'SELECT * FROM games;';
+const ALL_PLAYERS_IN_GAME = 'SELECT * FROM game_players WHERE game_id=${game_id};';
+const NUM_PLAYERS_IN_GAME = 'SELECT COUNT(*) FROM game_players WHERE game_id=${game_id};';
+const INSERT_SHUFFLED_CARDS = 'INSERT INTO game_cards (card_id, game_id, user_id, "order", discarded, active_discard, draw_pile) VALUES %L;';
+const UPDATE_CARDS_NEW_PLAYER = 'UPDATE game_cards SET user_id=${user_id}, draw_pile=0 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id;';
+const SELECT_ALL_CARDS_IN_GAME = 'SELECT * from game_cards WHERE game_id=${game_id};';
 
-const SELECT_USER_FROM_GAME = 'SELECT * FROM game_players WHERE game_id=$1 AND user_id=$2';
-const GET_DISCARD_CARDS = 'SELECT * FROM game_cards WHERE game_id=$1 AND discarded=1';
-const GET_ACTIVE_DISCARD = 'SELECT * FROM game_cards WHERE game_id=$1 AND active_discard=1';
-const REMOVE_ACTIVE_DISCARDS = 'UPDATE game_cards SET active_discard=0 WHERE game_id=$1 AND active_discard=1';
-const PLAY_CARD = 'UPDATE game_cards SET discarded=1, active_discard=1 WHERE card_id=$1 AND game_id=$2 RETURNING game_id AS id';
-const REMOVE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=0 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id';
-const UPDATE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=1 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id';
+const SELECT_USER_FROM_GAME = 'SELECT * FROM game_players WHERE game_id=$1 AND user_id=$2;';
+const GET_DISCARD_CARDS = 'SELECT * FROM game_cards WHERE game_id=$1 AND discarded=1;';
+const GET_ACTIVE_DISCARD = 'SELECT * FROM game_cards WHERE game_id=$1 AND active_discard=1;';
+const REMOVE_ACTIVE_DISCARDS = 'UPDATE game_cards SET active_discard=0 WHERE game_id=$1 AND active_discard=1;';
+const PLAY_CARD = 'UPDATE game_cards SET discarded=1, active_discard=1 WHERE card_id=$1 AND game_id=$2 RETURNING game_id AS id;';
+const REMOVE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=0 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id;';
+const UPDATE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=1 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id;';
 
 const randomNumber = (min, max) => {
     min = Math.ceil(min);
@@ -80,7 +80,7 @@ const create = (user_id, title) =>
         // Get cards from the lookup table
         // Promise.all() takes multiple promises and waits for all to be resolved before
         // going to next step, provides all promises' results as inputs.
-        Promise.all([{ id }, db.any('SELECT * FROM cards')])
+        Promise.all([{ id }, db.any('SELECT * FROM cards;')])
     )
     .then(([ {id}, cards ]) => {
         // Shuffle cards here:
@@ -194,15 +194,15 @@ const newPlayer = (user_id, game_id, count) =>
         .then(([{ id }]) => ({ id }));
 
 const getGameState = (gameId) => {
-    const players = 'SELECT * FROM game_players WHERE game_id=$1';
-    const cards = 'SELECT * FROM game_cards WHERE game_id=$1';
-    const direction = 'SELECT direction FROM games WHERE id=$1';
+    const players = 'SELECT * FROM game_players WHERE game_id=$1;';
+    const cards = 'SELECT * FROM game_cards WHERE game_id=$1;';
+    const direction = 'SELECT direction FROM games WHERE id=$1;';
     return Promise.all([db.any(players, gameId), db.any(cards, gameId), db.one(direction, gameId)]);
 }
 
 const getCardFromGame = (gameId, cardId) => {
     // console.log("Checking if user_id", userId, "holds card_id", cardId);
-    return db.one('SELECT * FROM game_cards WHERE game_id=$1 AND card_id=$2', [gameId, cardId]);
+    return db.one('SELECT * FROM game_cards WHERE game_id=$1 AND card_id=$2;', [gameId, cardId]);
 }
 
 const getUserFromGame = (gameId, userId) => {
@@ -239,13 +239,13 @@ const playValidCard = (cardId, gameId, userOrder) => {
 
 // TODO: Add direction parameter (and others to accomodate for special cards)
 const drawCard = (gameId, userId, userOrder) => {
-    const GET_DRAW_PILE_CARDS = 'SELECT * FROM game_cards WHERE game_id=$1 AND draw_pile=1 AND discarded=0 AND active_discard=0';
+    const GET_DRAW_PILE_CARDS = 'SELECT * FROM game_cards WHERE game_id=$1 AND draw_pile=1 AND discarded=0 AND active_discard=0;';
     return db.any(GET_DRAW_PILE_CARDS, [gameId])
     .then((drawCards) => {
         // Array of objects (cards in draw_pile)
         // user_id, game_id, card_id, order, discarded, active_discard, draw_pile
         const randomCardIndex = randomNumber(0, drawCards.length - 1);
-        const INSERT_DRAW_CARD = 'UPDATE game_cards SET user_id=$1, discarded=0, active_discard=0, draw_pile=0 WHERE game_id=$2 AND card_id=$3';
+        const INSERT_DRAW_CARD = 'UPDATE game_cards SET user_id=$1, discarded=0, active_discard=0, draw_pile=0 WHERE game_id=$2 AND card_id=$3;';
         const drawCardId = drawCards[randomCardIndex].card_id;
         const nextOrder = nextPlayerOrder(userOrder, 1);
         console.log("Draw card id=", drawCardId);

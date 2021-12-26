@@ -5,9 +5,9 @@ const tables = require("../db/table_names");
 
 router.get("/", (request, response) => {
     db.any(
-        `INSERT INTO test_table ("testString") VALUES ('Hello at ${Date.now()}')`
+        `INSERT INTO test_table ("testString") VALUES ('Hello at ${Date.now()}');`
     )
-    .then((_)=> db.any(`SELECT * FROM test_table`) )
+    .then((_)=> db.any(`SELECT * FROM test_table;`) )
     .then( result => response.json( result ) )
     .catch( error => {
         console.log( error );
@@ -18,7 +18,7 @@ router.get("/", (request, response) => {
 // router.get("/tables", (req, res) => {
 //     Promise.all(
 //         Object.keys(tables).map((tableName) =>
-//             db.any(`SELECT * FROM ${tables[tableName]}`)
+//             db.any(`SELECT * FROM ${tables[tableName]};`)
 //             .then((result) => ({
 //             tableName,
 //             result,

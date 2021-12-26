@@ -11,7 +11,7 @@ router.post('/create', (req, res, next) => {
         let gameId = 0;
         // Check for empty comment?
 
-        db.query(`INSERT INTO chats ("user_id", "message", "created") VALUES ($1, $2, $3)`, [userId, comment, "now()"])
+        db.query(`INSERT INTO chats ("user_id", "message", "created") VALUES ($1, $2, $3);`, [userId, comment, "now()"])
         .then((_) => {
             req.flash('success', 'Posted a comment!');
             res.redirect('/game');

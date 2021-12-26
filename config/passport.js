@@ -7,7 +7,7 @@ module.exports = function(passport) {
   passport.use(
     new LocalStrategy({usernameField: 'username', passwordField: 'password'}, (username, password, done) => {
       // Match user
-      db.any('SELECT * FROM users WHERE username = $1', username)
+      db.any('SELECT * FROM users WHERE username = $1;', username)
       .then( result => {
         // If no username exists
         if(result.length > 0 && bcrypt.compareSync(password, result[0].password)) {
@@ -28,7 +28,7 @@ passport.serializeUser((user, done) => {
 });
   
 passport.deserializeUser((id, done) => {
-  db.one('SELECT * FROM users WHERE id=$1', [id])
+  db.one('SELECT * FROM users WHERE id=$1;', [id])
   .then(({ id, username }) => done(null, { id, username }))
   .catch( error => {
     console.log( error );
