@@ -14,6 +14,9 @@ GAME LOGIC:
             - (DONE-ish?) Stop updating gameState?
                 - Safely disable Draw button (or remove?)
             - Post an alert or message on screen as to who won?
+    - (OPTIONAL) Two or Three players can play??
+        - Once two players are in, game can start?
+        - During game, more players up to MAX PLAYERS (4) can join?
     - (OPTIONAL) CALL UNO! feature
         - Checks if user is in game, check if its user's turn
         - Checks if user has two cards (about to play a card)
