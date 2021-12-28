@@ -426,7 +426,7 @@ async function playCard(gameId, cardId) {
         }
         await fetch(`/games/${gameId}/playwild/${cardId}/${color}`, { method: 'POST' })
         .then((response) => response.json())
-        // .then((gameData) => createGameState(gameData))
+        .then((gameData) => createGameState(gameData))
         .catch(console.log);
     }
     // A Non-Wild Card is played:

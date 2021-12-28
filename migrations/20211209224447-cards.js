@@ -28,7 +28,13 @@ const CARD_LIST = (() => {
   }));
   deck.push(... wilds, ... wilds, ... wilds, ... wilds)
 
+  colors.forEach((color) => {
+    deck.push({ color, displayName: "Wild" });
+    deck.push({ color, displayName: "Draw 4" });
+  });
+
   return deck;
+
 })();
 
 module.exports = {

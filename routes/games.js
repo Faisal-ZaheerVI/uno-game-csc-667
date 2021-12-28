@@ -120,7 +120,7 @@ router.post("/:id/play/:card", (req, res, next) => {
                             // Make sure it's the user's turn:
                             if(gameUser.current_player) {
                                 // It is the user's turn.
-                                console.log("It is the player's turn!");
+                                console.log("It is",req.user.username,"turn!");
                                 // Can the card be played? (i.e. cant play Red 1 on Blue 2)
                                 return Promise.all([
                                     users, gameCard, gameUser, 
@@ -272,7 +272,7 @@ router.post("/:id/playwild/:card/:color", (req, res, next) => {
                             // Make sure it's the user's turn:
                             if(gameUser.current_player) {
                                 // It is the user's turn.
-                                console.log("It is the player's turn!");
+                                console.log(gameUser,"is playing a card on their turn!");
                                 // Can the card be played? (i.e. cant play Red 1 on Blue 2)
                                 return Promise.all([
                                     users, gameCard, gameUser, 
@@ -324,12 +324,12 @@ router.post("/:id/playwild/:card/:color", (req, res, next) => {
 
         if(userCard.id % 2 == 0) {
             // Played a Plus FOUR card!
-            Games.playWildPlusFourCard(userCard.id, gameId, gameUser.order);
+            Games.playWildPlusFourCard(userCard.id, gameId, gameUser.order, cardColor);
         }
 
         else {
             // Played a WILD card!
-            Games.playWildCard(userCard.id, gameId, gameUser.order);
+            Games.playWildCard(userCard.id, gameId, gameUser.order, cardColor);
         }
 
         // After playing a valid card, send gateState data to front-end.

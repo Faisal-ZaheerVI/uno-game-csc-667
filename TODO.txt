@@ -1,18 +1,25 @@
+LOGIN:
+    - Incorrect login currently redirects to /users/login empty empty page 
+    - FIX this to display error messages (i.e. account doesn't exist, wrong passwd, etc.)
+
 GAME LOGIC:
     - (FOR LATER) Fix weird double click to do most interactions?
         - Rarely is one click for interactions (i.e. clicking card to play)
+        - NEW: Have to click again or refresh the page for updated game state after interaction
+    = Indicate who's turn it is
+        - Text Box with log of commands on screen?
+        - OR Text Box that updates who's turn it is
     - Implement interactions in Game
         - PLAYS CARD:
             - Special cards/interactions:
                 - Reverse: Changes direction field in "games"
                 - Skip: Skips over next player  
-                    - Check direction (1 or -1)
-                    - Then add/subtract 2 to next player order
-                    (changes current_player based on new player order)
+                    - Logic is DONE
+                    - Factor in direction? (For reverse cards)
+                        - Check direction (1 or -1)
                 - +2 cards:
-                    - Add 2 draw pile cards to next player
-                        (calculate normal order based on direction 1 or -1)
-                    - Calculate new order for skipping over player
+                    - Logic is DONE
+                    - Factor in direction (For reverse cards)
                 - Wild cards:
                     - +4 cards:
                         = Choose color (Red, Blue, Green, Yellow)
@@ -21,8 +28,8 @@ GAME LOGIC:
                         - Calculate new order for skipping over player
                         - Acts as a chosen color card with any value
                     - Wild:
-                        - Just choosing color (Red, Blue, Green, Yellow)
-                        - Acts as a chosen color card with any value
+                        - Logic is DONE
+                        - Factor in direction (For reverse cards)
                     - (Javascript alert input prompt to get color?)
         - DRAWS CARD:
             - Incorportate /games/:id/draw into +2/+4 card plays???
