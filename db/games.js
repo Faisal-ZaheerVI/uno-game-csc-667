@@ -235,7 +235,6 @@ const getGameState = (gameId) => {
 }
 
 const getCardFromGame = (gameId, cardId) => {
-    // console.log("Checking if user_id", userId, "holds card_id", cardId);
     return db.one('SELECT * FROM game_cards WHERE game_id=$1 AND card_id=$2;', [gameId, cardId]);
 }
 
@@ -256,9 +255,6 @@ const getDirection = (gameId) => {
 }
 
 const playValidCard = (cardId, gameId, userOrder) => {
-    // Hard coded for normal direction (direction = 1).
-    // Change to -1 or take direction as parameter
-    // Change for Skip, +2, +4 cards?
     return getDirection(gameId)
     .then((result) => {
         console.log("Current direction is", result);
@@ -286,12 +282,12 @@ const drawCard = (gameId, userId, userOrder) => {
         let currentDirection = result.direction;
         return db.any(GET_DRAW_PILE_CARDS, [gameId])
         .then((drawCards) => {
-            // If Draw cards are EMPTY (no more cards in draw pile), reshuffle discard pile:
+            // If Draw cards are near EMPTY (no more cards in draw pile), reshuffle discard pile:
             /**
              * 1) Get all discarded=1 cards (active_discard=0)
              * 2) Set cards to draw_pile=1, discarded=0, active_discard=0
              */
-            if(drawCards.length < 1) {
+            if(drawCards.length < 4) {
                 db.any(DISCARD_TO_DRAW_PILE, [gameId])
                 .catch(console.log);
             }
@@ -343,8 +339,8 @@ const playPlusTwoCard = (cardId, gameId, userOrder) => {
                 console.log("User by order:", users.user_id);
                 return db.any(GET_DRAW_PILE_CARDS, [gameId])
                 .then((drawCards) => {
-                    // If draw pile empty, reshuffled discards and refill draw pile.
-                    if(drawCards.length < 1) {
+                    // If draw pile is near empty, reshuffled discards and refill draw pile.
+                    if(drawCards.length < 4) {
                         db.any(DISCARD_TO_DRAW_PILE, [gameId])
                         .catch(console.log);
                     }
@@ -375,8 +371,6 @@ const playPlusTwoCard = (cardId, gameId, userOrder) => {
     .catch(console.log);
 }
 
-// TODO: Reverse the board (forwards = 1 or backwards = -1).
-// Currently hard coded as normal colored valid card.
 const playReverseCard = (cardId, gameId, userOrder) => {
     return db.one(GET_GAME_DIRECTION, [gameId])
     .then((result) => {
@@ -414,7 +408,6 @@ const playReverseCard = (cardId, gameId, userOrder) => {
     .catch(console.log);
 }
 
-// TODO: Factor in direction parameter.
 // COMPLETED: Skips the next player's turn.
 // It is now the player after the skipped player's turn.
 const playSkipCard = (cardId, gameId, userOrder) => {
@@ -433,8 +426,7 @@ const playSkipCard = (cardId, gameId, userOrder) => {
     ]);
 }
 
-// TODO: Based on color chosen, add colored Wild card to active_discard.
-// TODO: Factor in direction parameter.
+// Based on color chosen, add colored Wild card to active_discard.
 const playWildCard = (cardId, gameId, userOrder, color) => {
     return getDirection(gameId)
     .then((result) => {
@@ -443,8 +435,6 @@ const playWildCard = (cardId, gameId, userOrder, color) => {
         const nextOrder = nextPlayerOrder(userOrder, currentDirection);
         
         let wildCardId = 0;
-        console.log("Color is", color, "of type", typeof(color));
-
         // IDs of colored Wild cards are 109,111,113,115 for Red,Blue,Green,Yellow respectively.
         switch(color) {
             case "red": wildCardId = 109; break;
@@ -479,27 +469,99 @@ const playWildCard = (cardId, gameId, userOrder, color) => {
 // TODO: Based on color chosen, add colored Wild +4 to active_discard.
 // TODO: Factor in direction to account for who gets skipped and drawn 4 cards.
 const playWildPlusFourCard = (cardId, gameId, userOrder, color) => {
-    // return getDirection(gameId)
-    // .then((result) => {
-    //     console.log("Current direction is", result);
-    //     let currentDirection = result.direction;
+    // Chosen a color (red,blue,green,yellow)
+    // Skips next players turn (based on direction)
+    // Gives 4 drawn cards to skipped player
+    // Updates active_discard to chosen colored +4 wild card (110,112,114,or 116)
+    // Updates next player to player after skipped player
 
-    // })
-    // .catch(console.log);
+    return getDirection(gameId)
+    .then((result) => {
+        console.log("Current direction is", result);
+        let currentDirection = result.direction;
+        let skippedOrder = nextPlayerOrder(userOrder, currentDirection);
+        let nextOrder = skipNextPlayerOrder(userOrder);
 
-    let nextOrder = skipNextPlayerOrder(userOrder);
+        let wildCardId = 0;
+        // IDs of colored +4 Wild cards are 110,112,114,116 for Red,Blue,Green,Yellow respectively.
+        switch(color) {
+            case "red": wildCardId = 110; break;
+            case "blue": wildCardId = 112; break;
+            case "green": wildCardId = 114; break;
+            case "yellow": wildCardId = 116; break;
+            default: break;
+        }
+
+        if(wildCardId == 0) {
+            console.log("ERROR: wildCardId is 0!");
+        }
     
-    return Promise.all([
-        // Removes cards on top of discard (visibility purposes)
-        db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
-        // Adds played card as top of the discard pile (visible upon gameState update)
-        db.one(PLAY_CARD, [cardId, gameId]),
-        // Removes current player status from current user.
-        db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
-        // Adds current player status to the next player 
-        // (determined by order, TODO add: direction/special cards effect)
-        db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
-    ]);
+        return Promise.all([
+            // Removes cards on top of discard (visibility purposes)
+            db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
+            // Adds played card to the discard pile.
+            db.one(PLAY_WILD_CARD, [cardId, gameId]),
+            // NEW: Adds chosen color Wild Card to active_discard pile (for visibility).
+            db.one(UPDATE_ACTIVE_WILD_CARD, [wildCardId, gameId]),
+            // Adds two cards to SKIPPED player's deck.
+            db.one(GET_USER_BY_ORDER, [gameId, skippedOrder])
+            .then((users) => {
+                console.log("User by order:", users.user_id);
+                return db.any(GET_DRAW_PILE_CARDS, [gameId])
+                .then((drawCards) => {
+                    // If draw pile is near empty, reshuffled discards and refill draw pile.
+                    if(drawCards.length < 4) {
+                        db.any(DISCARD_TO_DRAW_PILE, [gameId])
+                        .catch(console.log);
+                    }
+                    // Drawn Card #1
+                    let randomCardIndex1 = randomNumber(0, drawCards.length - 1);
+                    const drawCardId1 = drawCards[randomCardIndex1].card_id;
+                    // Drawn Card #2
+                    let randomCardIndex2 = randomNumber(0, drawCards.length - 1);
+                    // Make sure user is not given the same card twice.
+                    while(randomCardIndex2 == randomCardIndex1) 
+                    {
+                        randomCardIndex2 = randomNumber(0, drawCards.length - 1);
+                    }
+                    const drawCardId2 = drawCards[randomCardIndex2].card_id;
+                    // Drawn Card #3
+                    let randomCardIndex3 = randomNumber(0, drawCards.length - 1);
+                    while(randomCardIndex3 == randomCardIndex1
+                        || randomCardIndex3 == randomCardIndex2) 
+                    {
+                        randomCardIndex3 = randomNumber(0, drawCards.length - 1);
+                    }
+                    const drawCardId3 = drawCards[randomCardIndex3].card_id;
+                    // Drawn card #4
+                    let randomCardIndex4 = randomNumber(0, drawCards.length - 1);
+                    while(randomCardIndex4 == randomCardIndex1
+                        || randomCardIndex4 == randomCardIndex2
+                        || randomCardIndex4 == randomCardIndex3) 
+                    {
+                        randomCardIndex4 = randomNumber(0, drawCards.length - 1);
+                    }
+                    const drawCardId4 = drawCards[randomCardIndex4].card_id;
+
+                    // SQL Inserts 4 uniquely drawn cards into skipped player's deck.
+                    return Promise.all([
+                        db.one(INSERT_DRAW_CARD, [users.user_id, gameId, drawCardId1]),
+                        db.one(INSERT_DRAW_CARD, [users.user_id, gameId, drawCardId2]),
+                        db.one(INSERT_DRAW_CARD, [users.user_id, gameId, drawCardId3]),
+                        db.one(INSERT_DRAW_CARD, [users.user_id, gameId, drawCardId4])
+                    ]);
+                })
+                .catch(console.log);
+            })
+            .catch(console.log),
+            // Removes current player status from current user.
+            db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
+            // Adds current player status to the next player 
+            // (determined by order, TODO add: direction/special cards effect)
+            db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
+        ]);
+    })
+    .catch(console.log);
 }
 
 module.exports = {
