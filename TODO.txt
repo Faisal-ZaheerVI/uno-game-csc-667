@@ -1,3 +1,8 @@
+CURRENT NOTES:
+    - Completed Interactions: Number/Color cards, +2, Reverse, Skip, Wild
+    - TODO Interactions: +4 Wild
+
+
 LOGIN:
     - Incorrect login currently redirects to /users/login empty empty page 
     - FIX this to display error messages (i.e. account doesn't exist, wrong passwd, etc.)

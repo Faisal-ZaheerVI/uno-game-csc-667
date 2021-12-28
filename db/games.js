@@ -2,7 +2,8 @@ const db = require('../db');
 var format = require('pg-format'); // To SQL insert nested array of array values with one query
 
 // Constants
-const MAX_PLAYERS = 4;
+const MIN_PLAYERS = 2; // OPTIONAL: Game can start with just 2 or 3 players?
+const MAX_PLAYERS = 4; // Game starts only with max players (aka 4).
 
 // SQL statement presets:
 const CREATE_GAME = 'INSERT INTO games (direction, user_id, title, created) VALUES (1, $1, $2, $3) RETURNING id;';
@@ -17,22 +18,26 @@ const NUM_PLAYERS_IN_GAME = 'SELECT COUNT(*) FROM game_players WHERE game_id=${g
 const SELECT_ALL_CARDS_IN_GAME = 'SELECT * from game_cards WHERE game_id=${game_id};';
 const SELECT_USER_FROM_GAME = 'SELECT * FROM game_players WHERE game_id=$1 AND user_id=$2;';
 
+const GET_ALL_GAME_PLAYERS = 'SELECT * FROM game_players WHERE game_id=$1;';
+const GET_ALL_GAME_CARDS = 'SELECT * FROM game_cards WHERE game_id=$1;';
+const GET_GAME_DIRECTION = 'SELECT direction FROM games WHERE id=$1;';
+
 const GET_DISCARD_CARDS = 'SELECT * FROM game_cards WHERE game_id=$1 AND discarded=1 AND active_discard=0;';
 const GET_ACTIVE_DISCARD = 'SELECT * FROM game_cards WHERE game_id=$1 AND active_discard=1;';
 const REMOVE_ACTIVE_DISCARDS = 'UPDATE game_cards SET active_discard=0 WHERE game_id=$1 AND active_discard=1;';
 const PLAY_CARD = 'UPDATE game_cards SET discarded=1, active_discard=1 WHERE card_id=$1 AND game_id=$2 RETURNING game_id AS id;';
+const PLAY_WILD_CARD = 'UPDATE game_cards SET discarded=1 WHERE card_id=$1 AND game_id=$2 RETURNING game_id AS id;';
+const UPDATE_ACTIVE_WILD_CARD = 'UPDATE game_cards SET active_discard=1 WHERE card_id=$1 AND game_id=$2 RETURNING game_id AS id;';
 const REMOVE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=0 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id;';
 const UPDATE_CURRENT_PLAYER = 'UPDATE game_players SET current_player=1 WHERE game_id=${game_id} AND "order"=${order} RETURNING game_id AS id;';
 
 const GET_DRAW_PILE_CARDS = 'SELECT * FROM game_cards WHERE game_id=$1 AND draw_pile=1 AND discarded=0 AND active_discard=0;';
 const INSERT_DRAW_CARD = 'UPDATE game_cards SET user_id=$1, discarded=0, active_discard=0, draw_pile=0 WHERE game_id=$2 AND card_id=$3;';
-const INSERT_TWO_DRAW_CARDS = 'UPDATE game_cards SET user_id=$1, discarded=0, active_discard=0, draw_pile=0 WHERE game_id=$2 AND card_id=$3 AND card_id=$4;';
 const GET_USER_BY_ORDER = 'SELECT * FROM game_players WHERE game_id=$1 AND "order"=$2;';
 // Uses card_id<109 so that colored Wild cards are not put in draw_pile (they are for visuals only).
 const DISCARD_TO_DRAW_PILE = 'UPDATE game_cards SET draw_pile=1, discarded=0, active_discard=0 WHERE game_id=$1 AND discarded=1 AND active_discard=0 AND card_id<109;';
 
-const PLAY_WILD_CARD = 'UPDATE game_cards SET discarded=1 WHERE card_id=$1 AND game_id=$2 RETURNING game_id AS id;';
-const UPDATE_ACTIVE_WILD_CARD = 'UPDATE game_cards SET active_discard=1 WHERE card_id=$1 AND game_id=$2 RETURNING game_id AS id;';
+const UPDATE_NEW_DIRECTION = 'UPDATE games SET direction=$1 WHERE id=$2;';
 
 const randomNumber = (min, max) => {
     min = Math.ceil(min);
@@ -41,24 +46,33 @@ const randomNumber = (min, max) => {
 }
 
 const nextPlayerOrder = (currentUserOrder, direction) => {
-    let nextPlayerOrder = currentUserOrder;
+    let nextPlayerOrder = 0;
 
     // Order is NOT reversed.
     if(direction == 1) {
-        if(currentUserOrder == 4) {
-            nextPlayerOrder = 1;
-        } else {
-            nextPlayerOrder++;
+        switch(currentUserOrder) {
+            case 1: nextPlayerOrder = 2; break;
+            case 2: nextPlayerOrder = 3; break;
+            case 3: nextPlayerOrder = 4; break;
+            case 4: nextPlayerOrder = 1; break;
+            default: break;
         }
     }
     // Order IS reversed. (when reversed card is played)
     else if(direction == -1) {
-        if(currentUserOrder == 1) {
-            nextPlayerOrder = 4;
-        } else {
-            nextPlayerOrder--;
+        switch(currentUserOrder) {
+            case 1: nextPlayerOrder = 4; break;
+            case 2: nextPlayerOrder = 1; break;
+            case 3: nextPlayerOrder = 2; break;
+            case 4: nextPlayerOrder = 3; break;
+            default: break;
         }
     }
+
+    if(nextPlayerOrder == 0) {
+        console.log("ERROR: nextPlayerOrder is 0!");
+    }
+
     return nextPlayerOrder;
 }
 
@@ -213,10 +227,11 @@ const newPlayer = (user_id, game_id, count) =>
         .then(([{ id }]) => ({ id }));
 
 const getGameState = (gameId) => {
-    const players = 'SELECT * FROM game_players WHERE game_id=$1;';
-    const cards = 'SELECT * FROM game_cards WHERE game_id=$1;';
-    const direction = 'SELECT direction FROM games WHERE id=$1;';
-    return Promise.all([db.any(players, gameId), db.any(cards, gameId), db.one(direction, gameId)]);
+    return Promise.all([
+        db.any(GET_ALL_GAME_PLAYERS, gameId), 
+        db.any(GET_ALL_GAME_CARDS, gameId), 
+        db.one(GET_GAME_DIRECTION, gameId)
+    ]);
 }
 
 const getCardFromGame = (gameId, cardId) => {
@@ -236,49 +251,24 @@ const getActiveDiscard = (gameId) => {
     return db.one(GET_ACTIVE_DISCARD, [gameId]);
 }
 
-// TODO: Add direction parameter (and others to accomodate for special cards)
+const getDirection = (gameId) => {
+    return db.one(GET_GAME_DIRECTION, [gameId]);
+}
+
 const playValidCard = (cardId, gameId, userOrder) => {
     // Hard coded for normal direction (direction = 1).
     // Change to -1 or take direction as parameter
     // Change for Skip, +2, +4 cards?
-    const nextOrder = nextPlayerOrder(userOrder, 1);
-
-    return Promise.all([
-        // Removes cards on top of discard (visibility purposes)
-        db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
-        // Adds played card as top of the discard pile (visible upon gameState update)
-        db.one(PLAY_CARD, [cardId, gameId]),
-        // Removes current player status from current user.
-        db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
-        // Adds current player status to the next player 
-        // (determined by order, TODO add: direction/special cards effect)
-        db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
-    ]);
-}
-
-// TODO: Add direction parameter (and others to accomodate for special cards)
-const drawCard = (gameId, userId, userOrder) => {
-    return db.any(GET_DRAW_PILE_CARDS, [gameId])
-    .then((drawCards) => {
-        // If Draw cards are EMPTY (no more cards in draw pile), reshuffle discard pile:
-        /**
-         * 1) Get all discarded=1 cards (active_discard=0)
-         * 2) Set cards to draw_pile=1, discarded=0, active_discard=0
-         */
-        if(drawCards.length < 1) {
-            db.any(DISCARD_TO_DRAW_PILE, [gameId])
-            .catch(console.log);
-        }
-
-        // Array of objects (cards in draw_pile)
-        // user_id, game_id, card_id, order, discarded, active_discard, draw_pile
-        const randomCardIndex = randomNumber(0, drawCards.length - 1);
-        const drawCardId = drawCards[randomCardIndex].card_id;
-        const nextOrder = nextPlayerOrder(userOrder, 1);
-        console.log("Draw card id=", drawCardId);
+    return getDirection(gameId)
+    .then((result) => {
+        console.log("Current direction is", result);
+        let currentDirection = result.direction;
+        const nextOrder = nextPlayerOrder(userOrder, currentDirection);
         return Promise.all([
-            // Inserts draw card to the user deck in the game.
-            db.one(INSERT_DRAW_CARD, [userId, gameId, drawCardId]),
+            // Removes cards on top of discard (visibility purposes)
+            db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
+            // Adds played card as top of the discard pile (visible upon gameState update)
+            db.one(PLAY_CARD, [cardId, gameId]),
             // Removes current player status from current user.
             db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
             // Adds current player status to the next player 
@@ -289,81 +279,139 @@ const drawCard = (gameId, userId, userOrder) => {
     .catch(console.log);
 }
 
-// TODO: Skip next player's turn and give skipped player 2 drawn cards.
-// TODO: Factor in direction as to who gets skipped and given 2 cards.
-// Currently skips player but doesn't give two cards.
+const drawCard = (gameId, userId, userOrder) => {
+    return getDirection(gameId)
+    .then((result) => {
+        console.log("Current direction is", result);
+        let currentDirection = result.direction;
+        return db.any(GET_DRAW_PILE_CARDS, [gameId])
+        .then((drawCards) => {
+            // If Draw cards are EMPTY (no more cards in draw pile), reshuffle discard pile:
+            /**
+             * 1) Get all discarded=1 cards (active_discard=0)
+             * 2) Set cards to draw_pile=1, discarded=0, active_discard=0
+             */
+            if(drawCards.length < 1) {
+                db.any(DISCARD_TO_DRAW_PILE, [gameId])
+                .catch(console.log);
+            }
+
+            // Array of objects (cards in draw_pile)
+            // user_id, game_id, card_id, order, discarded, active_discard, draw_pile
+            const randomCardIndex = randomNumber(0, drawCards.length - 1);
+            const drawCardId = drawCards[randomCardIndex].card_id;
+            const nextOrder = nextPlayerOrder(userOrder, currentDirection);
+            console.log("Draw card id=", drawCardId);
+            return Promise.all([
+                // Inserts draw card to the user deck in the game.
+                db.one(INSERT_DRAW_CARD, [userId, gameId, drawCardId]),
+                // Removes current player status from current user.
+                db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
+                // Adds current player status to the next player 
+                // (determined by order, TODO add: direction/special cards effect)
+                db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
+            ]);
+        })
+        .catch(console.log);
+    })
+    .catch(console.log);
+}
+
 const playPlusTwoCard = (cardId, gameId, userOrder) => {
     // Removes cards on top of discard (visibility purposes)
     // Adds played card as top of the discard pile (visible upon gameState update)
-    // TODO: Add two cards to SKIPPED player deck.
+    // Adds two cards to SKIPPED player deck (based on direction).
     // Removes current player status from current user.
-    // Adds current player status to the next player 
+    // Adds current player status to the next player after skipped player.
 
-    // Change 1 to some direction (for reverse cases)
-    let skippedOrder = nextPlayerOrder(userOrder, 1);
-    let nextOrder = skipNextPlayerOrder(userOrder);
-    
-    return Promise.all([
-        // Removes cards on top of discard (visibility purposes)
-        db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
-        // Adds played card as top of the discard pile (visible upon gameState update)
-        db.one(PLAY_CARD, [cardId, gameId]),
+    return getDirection(gameId)
+    .then((result) => {
+        console.log("Current direction is", result);
+        let currentDirection = result.direction;
+        let skippedOrder = nextPlayerOrder(userOrder, currentDirection);
+        let nextOrder = skipNextPlayerOrder(userOrder);
+        
+        return Promise.all([
+            // Removes cards on top of discard (visibility purposes)
+            db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
+            // Adds played card as top of the discard pile (visible upon gameState update)
+            db.one(PLAY_CARD, [cardId, gameId]),
 
-        // Adds two cards to SKIPPED player's deck.
-        db.one(GET_USER_BY_ORDER, [gameId, skippedOrder])
-        .then((users) => {
-            console.log("User by order:", users.user_id);
-            return db.any(GET_DRAW_PILE_CARDS, [gameId])
-            .then((drawCards) => {
-                // If draw pile empty, reshuffled discards and refill draw pile.
-                if(drawCards.length < 1) {
-                    db.any(DISCARD_TO_DRAW_PILE, [gameId])
-                    .catch(console.log);
-                }
-                const randomCardIndex1 = randomNumber(0, drawCards.length - 1);
-                const drawCardId1 = drawCards[randomCardIndex1].card_id;
-                let randomCardIndex2 = randomNumber(0, drawCards.length - 1);
-                // Make sure user is not given the same card twice.
-                while(randomCardIndex2 == randomCardIndex1) {
-                    randomCardIndex2 = randomNumber(0, drawCards.length - 1);
-                }
-                const drawCardId2 = drawCards[randomCardIndex2].card_id;
-                return Promise.all([
-                    //users[0].user_id --> Skipped player's user id
-                    db.one(INSERT_DRAW_CARD, [users.user_id, gameId, drawCardId1]),
-                    db.one(INSERT_DRAW_CARD, [users.user_id, gameId, drawCardId2])
-                ]);
-                // return db.one(INSERT_TWO_DRAW_CARDS, [users.user_id, gameId, drawCardId1, drawCardId2]);
-                // db.one(INSERT_DRAW_CARD, [users[0].user_id, gameId, drawCardId2])
+            // Adds two cards to SKIPPED player's deck.
+            db.one(GET_USER_BY_ORDER, [gameId, skippedOrder])
+            .then((users) => {
+                console.log("User by order:", users.user_id);
+                return db.any(GET_DRAW_PILE_CARDS, [gameId])
+                .then((drawCards) => {
+                    // If draw pile empty, reshuffled discards and refill draw pile.
+                    if(drawCards.length < 1) {
+                        db.any(DISCARD_TO_DRAW_PILE, [gameId])
+                        .catch(console.log);
+                    }
+                    const randomCardIndex1 = randomNumber(0, drawCards.length - 1);
+                    const drawCardId1 = drawCards[randomCardIndex1].card_id;
+                    let randomCardIndex2 = randomNumber(0, drawCards.length - 1);
+                    // Make sure user is not given the same card twice.
+                    while(randomCardIndex2 == randomCardIndex1) {
+                        randomCardIndex2 = randomNumber(0, drawCards.length - 1);
+                    }
+                    const drawCardId2 = drawCards[randomCardIndex2].card_id;
+                    return Promise.all([
+                        db.one(INSERT_DRAW_CARD, [users.user_id, gameId, drawCardId1]),
+                        db.one(INSERT_DRAW_CARD, [users.user_id, gameId, drawCardId2])
+                    ]);
+                })
+                .catch(console.log);
             })
-            .catch(console.log);
-        })
-        .catch(console.log),
+            .catch(console.log),
 
-        // Removes current player status from current user.
-        db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
-        // Adds current player status to the next player 
-        // (determined by order, TODO add: direction/special cards effect)
-        db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
-    ]);
+            // Removes current player status from current user.
+            db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
+            // Adds current player status to the next player 
+            // (determined by order, TODO add: direction/special cards effect)
+            db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
+        ]);
+    })
+    .catch(console.log);
 }
 
 // TODO: Reverse the board (forwards = 1 or backwards = -1).
 // Currently hard coded as normal colored valid card.
 const playReverseCard = (cardId, gameId, userOrder) => {
-    const nextOrder = nextPlayerOrder(userOrder, 1);
+    return db.one(GET_GAME_DIRECTION, [gameId])
+    .then((result) => {
+        console.log("Current direction is", result);
+        let currentDirection = result.direction;
+        let newDirection = 0;
 
-    return Promise.all([
-        // Removes cards on top of discard (visibility purposes)
-        db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
-        // Adds played card as top of the discard pile (visible upon gameState update)
-        db.one(PLAY_CARD, [cardId, gameId]),
-        // Removes current player status from current user.
-        db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
-        // Adds current player status to the next player 
-        // (determined by order, TODO add: direction/special cards effect)
-        db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
-    ]);
+        switch(currentDirection) {
+            case 1: newDirection = -1; break;
+            case -1: newDirection = 1; break;
+            default: break;
+        }
+
+        if(newDirection == 0) {
+            console.log("ERROR: currentDirection in playReverseCard should be 1 or -1!");
+            newDirection = 1;
+        }
+
+        const nextOrder = nextPlayerOrder(userOrder, newDirection);
+
+        return Promise.all([
+            // NEW: Changes direction of the order!
+            db.one(UPDATE_NEW_DIRECTION, [newDirection, gameId]),
+            // Removes cards on top of discard (visibility purposes)
+            db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
+            // Adds played card as top of the discard pile (visible upon gameState update)
+            db.one(PLAY_CARD, [cardId, gameId]),
+            // Removes current player status from current user.
+            db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
+            // Adds current player status to the next player 
+            // (determined by order, TODO add: direction/special cards effect)
+            db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
+        ]);
+    })
+    .catch(console.log);
 }
 
 // TODO: Factor in direction parameter.
@@ -388,42 +436,57 @@ const playSkipCard = (cardId, gameId, userOrder) => {
 // TODO: Based on color chosen, add colored Wild card to active_discard.
 // TODO: Factor in direction parameter.
 const playWildCard = (cardId, gameId, userOrder, color) => {
-    const nextOrder = nextPlayerOrder(userOrder, 1);
-    let wildCardId = 0;
-    console.log("Color is", color, "of type", typeof(color));
+    return getDirection(gameId)
+    .then((result) => {
+        console.log("Current direction is", result);
+        let currentDirection = result.direction;
+        const nextOrder = nextPlayerOrder(userOrder, currentDirection);
+        
+        let wildCardId = 0;
+        console.log("Color is", color, "of type", typeof(color));
 
-    // IDs of colored Wild cards are 109,111,113,115 for Red,Blue,Green,Yellow respectively.
-    switch(color) {
-        case "red": wildCardId = 109; break;
-        case "blue": wildCardId = 111; break;
-        case "green": wildCardId = 113; break;
-        case "yellow": wildCardId = 115; break;
-        default: break;
-    }
+        // IDs of colored Wild cards are 109,111,113,115 for Red,Blue,Green,Yellow respectively.
+        switch(color) {
+            case "red": wildCardId = 109; break;
+            case "blue": wildCardId = 111; break;
+            case "green": wildCardId = 113; break;
+            case "yellow": wildCardId = 115; break;
+            default: break;
+        }
 
-    if(wildCardId == 0) {
-        console.log("ERROR: wildCardId is 0!");
-    }
+        if(wildCardId == 0) {
+            console.log("ERROR: wildCardId is 0!");
+        }
 
-    return Promise.all([
-        // Removes cards on top of discard (visibility purposes)
-        db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
-        // Adds played card to the discard pile.
-        db.one(PLAY_WILD_CARD, [cardId, gameId]),
-        // NEW: Adds chosen color Wild Card to active_discard pile (for visibility).
-        db.one(UPDATE_ACTIVE_WILD_CARD, [wildCardId, gameId]),
-        // Removes current player status from current user.
-        db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
-        // Adds current player status to the next player 
-        // (determined by order, TODO add: direction/special cards effect)
-        db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
-    ]);
+        return Promise.all([
+            // Removes cards on top of discard (visibility purposes)
+            db.any(REMOVE_ACTIVE_DISCARDS, [gameId]),
+            // Adds played card to the discard pile.
+            db.one(PLAY_WILD_CARD, [cardId, gameId]),
+            // NEW: Adds chosen color Wild Card to active_discard pile (for visibility).
+            db.one(UPDATE_ACTIVE_WILD_CARD, [wildCardId, gameId]),
+            // Removes current player status from current user.
+            db.one(REMOVE_CURRENT_PLAYER, {game_id: gameId, order: userOrder}),
+            // Adds current player status to the next player 
+            // (determined by order, TODO add: direction/special cards effect)
+            db.one(UPDATE_CURRENT_PLAYER, {game_id: gameId, order: nextOrder})
+        ]);
+    })
+    .catch(console.log);
 }
 
 // TODO: Skip next player's turn, but give them 4 drawn cards.
 // TODO: Based on color chosen, add colored Wild +4 to active_discard.
 // TODO: Factor in direction to account for who gets skipped and drawn 4 cards.
 const playWildPlusFourCard = (cardId, gameId, userOrder, color) => {
+    // return getDirection(gameId)
+    // .then((result) => {
+    //     console.log("Current direction is", result);
+    //     let currentDirection = result.direction;
+
+    // })
+    // .catch(console.log);
+
     let nextOrder = skipNextPlayerOrder(userOrder);
     
     return Promise.all([
