@@ -9,7 +9,7 @@ Available at: https://salty-plains-39190.herokuapp.com/
 - Socket.io for real-time live chat and real-time game updating
 - JavaScript for game logic
 - Node.js, Express for game server + front-end
-- HTML/CSS for front-end
+- EJS engine for HTML + CSS for front-end
 - Heroku cloud application deployment
 
 # Team Members
