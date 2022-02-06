@@ -13,10 +13,10 @@ Available at: https://salty-plains-39190.herokuapp.com/
 - Heroku cloud application deployment
 
 # Team Members
-Faisal Zaheer
-Michael Satumba
-Lean Campana
-Jibraeel Abdelwahhab
+- Faisal Zaheer
+- Michael Satumba
+- Lean Campana
+- Jibraeel Abdelwahhab
 
 # Build/Run Instructions
 
